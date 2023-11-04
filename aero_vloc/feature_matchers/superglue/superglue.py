@@ -51,7 +51,9 @@ from tqdm import tqdm
 
 from aero_vloc.feature_detectors import SuperPoint
 from aero_vloc.feature_matchers.feature_matcher import FeatureMatcher
-from aero_vloc.feature_matchers.superglue.model.superglue_matcher import SuperGlueMatcher
+from aero_vloc.feature_matchers.superglue.model.superglue_matcher import (
+    SuperGlueMatcher,
+)
 from aero_vloc.utils import load_image_for_sp
 
 

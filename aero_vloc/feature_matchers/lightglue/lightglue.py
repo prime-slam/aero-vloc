@@ -18,7 +18,9 @@ from tqdm import tqdm
 
 from aero_vloc.feature_detectors import SuperPoint
 from aero_vloc.feature_matchers import FeatureMatcher
-from aero_vloc.feature_matchers.lightglue.model.lightglue_matcher import LightGlueMatcher
+from aero_vloc.feature_matchers.lightglue.model.lightglue_matcher import (
+    LightGlueMatcher,
+)
 from aero_vloc.utils import load_image_for_sp
 
 

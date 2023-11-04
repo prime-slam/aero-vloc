@@ -37,15 +37,16 @@ class FeatureMixerLayer(nn.Module):
 
 
 class MixVPR(nn.Module):
-    def __init__(self,
-                 in_channels=1024,
-                 in_h=20,
-                 in_w=20,
-                 out_channels=512,
-                 mix_depth=1,
-                 mlp_ratio=1,
-                 out_rows=4,
-                 ) -> None:
+    def __init__(
+        self,
+        in_channels=1024,
+        in_h=20,
+        in_w=20,
+        out_channels=512,
+        mix_depth=1,
+        mlp_ratio=1,
+        out_rows=4,
+    ) -> None:
         super().__init__()
 
         self.in_h = in_h  # height of input feature maps
@@ -56,13 +57,17 @@ class MixVPR(nn.Module):
         self.out_rows = out_rows  # row wise projection dimesion
 
         self.mix_depth = mix_depth  # L the number of stacked FeatureMixers
-        self.mlp_ratio = mlp_ratio  # ratio of the mid projection layer in the mixer block
+        self.mlp_ratio = (
+            mlp_ratio  # ratio of the mid projection layer in the mixer block
+        )
 
         hw = in_h * in_w
-        self.mix = nn.Sequential(*[
-            FeatureMixerLayer(in_dim=hw, mlp_ratio=mlp_ratio)
-            for _ in range(self.mix_depth)
-        ])
+        self.mix = nn.Sequential(
+            *[
+                FeatureMixerLayer(in_dim=hw, mlp_ratio=mlp_ratio)
+                for _ in range(self.mix_depth)
+            ]
+        )
         self.channel_proj = nn.Linear(in_channels, out_channels)
         self.row_proj = nn.Linear(hw, out_rows)
 

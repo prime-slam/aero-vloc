@@ -21,6 +21,7 @@ import torchvision.models as models
 
 from aero_vloc.vpr_systems.netvlad.model.layers import NetVLADModule
 
+
 class Flatten(nn.Module):
     def forward(self, input_data):
         return input_data.view(input_data.size(0), -1)
@@ -34,6 +35,7 @@ class L2Norm(nn.Module):
     def forward(self, input_data):
         return F.normalize(input_data, p=2, dim=self.dim)
 
+
 def get_backend():
     enc_dim = 512
     enc = models.vgg16(weights="IMAGENET1K_V1")
@@ -45,9 +47,11 @@ def get_backend():
     enc = nn.Sequential(*layers)
     return enc_dim, enc
 
+
 def get_pca_encoding(model, vlad_encoding):
     pca_encoding = model.WPCA(vlad_encoding.unsqueeze(-1).unsqueeze(-1))
     return pca_encoding
+
 
 def get_model(
     encoder,

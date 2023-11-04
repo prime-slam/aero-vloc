@@ -22,7 +22,6 @@ from torch import nn
 from types import SimpleNamespace
 from typing import Callable, List, Optional, Tuple
 
-
 try:
     from flash_attn.modules.mha import FlashCrossAttention
 except ModuleNotFoundError:

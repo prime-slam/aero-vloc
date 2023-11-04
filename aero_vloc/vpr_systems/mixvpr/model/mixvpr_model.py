@@ -18,17 +18,17 @@ from aero_vloc.vpr_systems.mixvpr.model.utils import get_backbone, get_aggregato
 
 
 class VPRModel(pl.LightningModule):
-    def __init__(self,
-                 # ---- Backbone
-                 backbone_arch='resnet50',
-                 pretrained=True,
-                 layers_to_freeze=1,
-                 layers_to_crop=[],
-
-                 # ---- Aggregator
-                 agg_arch='ConvAP',  # CosPlace, NetVLAD, GeM
-                 agg_config={},
-                 ):
+    def __init__(
+        self,
+        # ---- Backbone
+        backbone_arch="resnet50",
+        pretrained=True,
+        layers_to_freeze=1,
+        layers_to_crop=[],
+        # ---- Aggregator
+        agg_arch="ConvAP",  # CosPlace, NetVLAD, GeM
+        agg_config={},
+    ):
         super().__init__()
         self.encoder_arch = backbone_arch
         self.pretrained = pretrained
@@ -40,7 +40,9 @@ class VPRModel(pl.LightningModule):
 
         # ----------------------------------
         # get the backbone and the aggregator
-        self.backbone = get_backbone(backbone_arch, pretrained, layers_to_freeze, layers_to_crop)
+        self.backbone = get_backbone(
+            backbone_arch, pretrained, layers_to_freeze, layers_to_crop
+        )
         self.aggregator = get_aggregator(agg_arch, agg_config)
 
     # the forward pass of the lightning model

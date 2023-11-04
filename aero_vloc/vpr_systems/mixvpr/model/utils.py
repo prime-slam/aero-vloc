@@ -16,10 +16,12 @@ from aero_vloc.vpr_systems.mixvpr.model.mixvpr_aggregator import MixVPR
 from aero_vloc.vpr_systems.mixvpr.model.resnet import ResNet
 
 
-def get_backbone(backbone_arch='resnet50',
-                 pretrained=True,
-                 layers_to_freeze=2,
-                 layers_to_crop=[], ):
+def get_backbone(
+    backbone_arch="resnet50",
+    pretrained=True,
+    layers_to_freeze=2,
+    layers_to_crop=[],
+):
     """Helper function that returns the backbone given its name
 
     Args:
@@ -33,11 +35,11 @@ def get_backbone(backbone_arch='resnet50',
     Returns:
         nn.Module: the backbone as a nn.Model object
     """
-    if 'resnet' in backbone_arch.lower():
+    if "resnet" in backbone_arch.lower():
         return ResNet(backbone_arch, pretrained, layers_to_freeze, layers_to_crop)
 
 
-def get_aggregator(agg_arch='ConvAP', agg_config={}):
+def get_aggregator(agg_arch="ConvAP", agg_config={}):
     """Helper function that returns the aggregation layer given its name.
     If you happen to make your own aggregator, you might need to add a call
     to this helper function.
@@ -49,10 +51,10 @@ def get_aggregator(agg_arch='ConvAP', agg_config={}):
     Returns:
         nn.Module: the aggregation layer
     """
-    if 'mixvpr' in agg_arch.lower():
-        assert 'in_channels' in agg_config
-        assert 'out_channels' in agg_config
-        assert 'in_h' in agg_config
-        assert 'in_w' in agg_config
-        assert 'mix_depth' in agg_config
+    if "mixvpr" in agg_arch.lower():
+        assert "in_channels" in agg_config
+        assert "out_channels" in agg_config
+        assert "in_h" in agg_config
+        assert "in_w" in agg_config
+        assert "mix_depth" in agg_config
         return MixVPR(**agg_config)

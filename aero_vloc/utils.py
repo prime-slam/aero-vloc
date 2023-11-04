@@ -15,7 +15,6 @@ import cv2
 import torch
 import torchvision
 
-
 from pathlib import Path
 from PIL import Image
 from torchvision.transforms import InterpolationMode
