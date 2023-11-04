@@ -11,7 +11,7 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-from uav_loc.primitives.map import Map
-from uav_loc.primitives.map_tile import MapTile
-from uav_loc.primitives.uav_image import UAVImage
-from uav_loc.primitives.uav_seq import UAVSeq
+from aero_vloc.primitives.map import Map
+from aero_vloc.primitives.map_tile import MapTile
+from aero_vloc.primitives.uav_image import UAVImage
+from aero_vloc.primitives.uav_seq import UAVSeq

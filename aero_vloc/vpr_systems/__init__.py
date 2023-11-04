@@ -11,9 +11,9 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-from uav_loc.vpr_systems.anyloc import AnyLoc
-from uav_loc.vpr_systems.cosplace import CosPlace
-from uav_loc.vpr_systems.eigenplaces import EigenPlaces
-from uav_loc.vpr_systems.mixvpr import MixVPR
-from uav_loc.vpr_systems.netvlad import NetVLAD
-from uav_loc.vpr_systems.vpr_system import VPRSystem
+from aero_vloc.vpr_systems.anyloc import AnyLoc
+from aero_vloc.vpr_systems.cosplace import CosPlace
+from aero_vloc.vpr_systems.eigenplaces import EigenPlaces
+from aero_vloc.vpr_systems.mixvpr import MixVPR
+from aero_vloc.vpr_systems.netvlad import NetVLAD
+from aero_vloc.vpr_systems.vpr_system import VPRSystem

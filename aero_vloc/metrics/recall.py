@@ -11,9 +11,9 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-from uav_loc.localization_pipeline import LocalizationPipeline
-from uav_loc.metrics.utils import calculate_distance
-from uav_loc.primitives import UAVSeq
+from aero_vloc.localization_pipeline import LocalizationPipeline
+from aero_vloc.metrics.utils import calculate_distance
+from aero_vloc.primitives import UAVSeq
 
 
 def recall(

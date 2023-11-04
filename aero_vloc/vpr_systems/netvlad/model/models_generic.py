@@ -19,7 +19,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torchvision.models as models
 
-from uav_loc.vpr_systems.netvlad.model.layers import NetVLADModule
+from aero_vloc.vpr_systems.netvlad.model.layers import NetVLADModule
 
 class Flatten(nn.Module):
     def forward(self, input_data):

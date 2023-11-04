@@ -17,9 +17,9 @@ import torchvision
 from pathlib import Path
 from PIL import Image
 
-from uav_loc.utils import transform_image
-from uav_loc.vpr_systems import VPRSystem
-from uav_loc.vpr_systems.mixvpr.model.mixvpr_model import VPRModel
+from aero_vloc.utils import transform_image
+from aero_vloc.vpr_systems import VPRSystem
+from aero_vloc.vpr_systems.mixvpr.model.mixvpr_model import VPRModel
 
 
 class MixVPR(VPRSystem):

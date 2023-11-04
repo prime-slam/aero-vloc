@@ -13,7 +13,7 @@
 #  limitations under the License.
 from pathlib import Path
 
-from uav_loc.primitives.map_tile import MapTile
+from aero_vloc.primitives.map_tile import MapTile
 
 
 class Map:

@@ -11,8 +11,8 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-from uav_loc.feature_matchers import LightGlue, SuperGlue
-from uav_loc.localization_pipeline import LocalizationPipeline
-from uav_loc.metrics import recall
-from uav_loc.primitives import Map, UAVSeq
-from uav_loc.vpr_systems import AnyLoc, CosPlace, EigenPlaces, MixVPR, NetVLAD
+from aero_vloc.feature_matchers import LightGlue, SuperGlue
+from aero_vloc.localization_pipeline import LocalizationPipeline
+from aero_vloc.metrics import recall
+from aero_vloc.primitives import Map, UAVSeq
+from aero_vloc.vpr_systems import AnyLoc, CosPlace, EigenPlaces, MixVPR, NetVLAD

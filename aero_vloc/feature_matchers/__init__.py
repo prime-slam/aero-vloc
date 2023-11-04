@@ -11,6 +11,6 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-from uav_loc.feature_matchers.feature_matcher import FeatureMatcher
-from uav_loc.feature_matchers.lightglue import LightGlue
-from uav_loc.feature_matchers.superglue import SuperGlue
+from aero_vloc.feature_matchers.feature_matcher import FeatureMatcher
+from aero_vloc.feature_matchers.lightglue import LightGlue
+from aero_vloc.feature_matchers.superglue import SuperGlue

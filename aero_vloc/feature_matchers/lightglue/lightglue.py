@@ -16,10 +16,10 @@ import torch
 from pathlib import Path
 from tqdm import tqdm
 
-from uav_loc.feature_detectors import SuperPoint
-from uav_loc.feature_matchers import FeatureMatcher
-from uav_loc.feature_matchers.lightglue.model.lightglue_matcher import LightGlueMatcher
-from uav_loc.utils import load_image_for_sp
+from aero_vloc.feature_detectors import SuperPoint
+from aero_vloc.feature_matchers import FeatureMatcher
+from aero_vloc.feature_matchers.lightglue.model.lightglue_matcher import LightGlueMatcher
+from aero_vloc.utils import load_image_for_sp
 
 
 class LightGlue(FeatureMatcher):

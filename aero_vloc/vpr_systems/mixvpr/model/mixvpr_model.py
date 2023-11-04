@@ -14,7 +14,7 @@
 #  limitations under the License.
 import pytorch_lightning as pl
 
-from uav_loc.vpr_systems.mixvpr.model.utils import get_backbone, get_aggregator
+from aero_vloc.vpr_systems.mixvpr.model.utils import get_backbone, get_aggregator
 
 
 class VPRModel(pl.LightningModule):

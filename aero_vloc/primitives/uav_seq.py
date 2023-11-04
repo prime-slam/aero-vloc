@@ -13,7 +13,7 @@
 #  limitations under the License.
 from pathlib import Path
 
-from uav_loc.primitives.uav_image import UAVImage
+from aero_vloc.primitives.uav_image import UAVImage
 
 
 class UAVSeq:

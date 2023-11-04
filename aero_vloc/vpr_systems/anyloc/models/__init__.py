@@ -11,5 +11,5 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-from uav_loc.vpr_systems.anyloc.models.dinov2 import DinoV2ExtractFeatures
-from uav_loc.vpr_systems.anyloc.models.vlad import VLAD
+from aero_vloc.vpr_systems.anyloc.models.dinov2 import DinoV2ExtractFeatures
+from aero_vloc.vpr_systems.anyloc.models.vlad import VLAD

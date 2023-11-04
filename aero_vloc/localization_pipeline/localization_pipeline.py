@@ -18,10 +18,10 @@ import numpy as np
 from tqdm import tqdm
 from typing import Optional, Tuple
 
-from uav_loc.feature_matchers import FeatureMatcher
-from uav_loc.primitives import UAVImage, Map
-from uav_loc.utils import get_new_size
-from uav_loc.vpr_systems import VPRSystem
+from aero_vloc.feature_matchers import FeatureMatcher
+from aero_vloc.primitives import UAVImage, Map
+from aero_vloc.utils import get_new_size
+from aero_vloc.vpr_systems import VPRSystem
 
 
 class LocalizationPipeline:

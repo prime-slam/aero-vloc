@@ -16,13 +16,13 @@ import torch
 from pathlib import Path
 from PIL import Image
 
-from uav_loc.utils import transform_image
-from uav_loc.vpr_systems.netvlad.model.models_generic import (
+from aero_vloc.utils import transform_image
+from aero_vloc.vpr_systems.netvlad.model.models_generic import (
     get_backend,
     get_model,
     get_pca_encoding,
 )
-from uav_loc.vpr_systems.vpr_system import VPRSystem
+from aero_vloc.vpr_systems.vpr_system import VPRSystem
 
 
 class NetVLAD(VPRSystem):
