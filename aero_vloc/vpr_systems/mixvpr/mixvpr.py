@@ -18,7 +18,7 @@ from pathlib import Path
 from PIL import Image
 
 from aero_vloc.utils import transform_image
-from aero_vloc.vpr_systems import VPRSystem
+from aero_vloc.vpr_systems.vpr_system import VPRSystem
 from aero_vloc.vpr_systems.mixvpr.model.mixvpr_model import VPRModel
 
 
