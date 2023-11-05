@@ -31,6 +31,10 @@ class NetVLAD(VPRSystem):
     """
 
     def __init__(self, path_to_weights: str, resize: int = 800):
+        """
+        :param path_to_weights: Path to the weights
+        :param resize: The size to which the larger side of the image will be reduced while maintaining the aspect ratio
+        """
         super().__init__()
         self.resize = resize
         encoder_dim, encoder = get_backend()

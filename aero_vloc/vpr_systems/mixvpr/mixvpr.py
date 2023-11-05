@@ -28,6 +28,9 @@ class MixVPR(VPRSystem):
     """
 
     def __init__(self, ckpt_path):
+        """
+        :param ckpt_path: Path to the checkpoint file
+        """
         super().__init__()
         self.model = VPRModel(
             backbone_arch="resnet50",

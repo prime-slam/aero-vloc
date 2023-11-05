@@ -31,6 +31,9 @@ class LightGlue(FeatureMatcher):
     """
 
     def __init__(self, resize: int = 800):
+        """
+        :param resize: The size to which the larger side of the image will be reduced while maintaining the aspect ratio
+        """
         super().__init__(resize)
         self.super_point = SuperPoint().eval().to(self.device)
         self.light_glue_matcher = (

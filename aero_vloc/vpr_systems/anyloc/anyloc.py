@@ -29,6 +29,10 @@ class AnyLoc(VPRSystem):
     """
 
     def __init__(self, c_centers_file: Path, resize: int = 800):
+        """
+        :param c_centers_file: Path to clusters' centers
+        :param resize: The size to which the larger side of the image will be reduced while maintaining the aspect ratio
+        """
         super().__init__()
         self.resize = resize
         self.extractor = DinoV2ExtractFeatures(

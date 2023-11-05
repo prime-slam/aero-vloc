@@ -19,6 +19,9 @@ from pathlib import Path
 
 class FeatureMatcher(ABC):
     def __init__(self, resize: int):
+        """
+        :param resize: The size to which the larger side of the image will be reduced while maintaining the aspect ratio
+        """
         self.resize = resize
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         print('Running inference on device "{}"'.format(self.device))

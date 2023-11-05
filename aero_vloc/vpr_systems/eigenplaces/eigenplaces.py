@@ -28,6 +28,11 @@ class EigenPlaces(VPRSystem):
     def __init__(
         self, backbone: str = "ResNet101", fc_output_dim: int = 2048, resize: int = 800
     ):
+        """
+        :param backbone: Type of backbone
+        :param fc_output_dim: Dimension of descriptors
+        :param resize: The size to which the larger side of the image will be reduced while maintaining the aspect ratio
+        """
         super().__init__()
         self.resize = resize
         self.backbone = backbone

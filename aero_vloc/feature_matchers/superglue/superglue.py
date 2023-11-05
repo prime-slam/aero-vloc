@@ -64,6 +64,10 @@ class SuperGlue(FeatureMatcher):
     """
 
     def __init__(self, path_to_sg_weights, resize=800):
+        """
+        :param path_to_sg_weights: Path to SuperGlue weights
+        :param resize: The size to which the larger side of the image will be reduced while maintaining the aspect ratio
+        """
         super().__init__(resize)
         self.super_point = SuperPoint().eval().to(self.device)
         self.super_glue_matcher = (
