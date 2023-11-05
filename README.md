@@ -7,4 +7,4 @@ Weights for MixVPR, NetVLAD and SuperGlue as well as cluster centers for AnyLoc 
 All other necessary files for CosPlace, EigenPlaces and SuperPoint will be downloaded automatically via TorchHub.
 
 ## Usage
-Please check `example.ipynb` for an example of localizing and using the Recall metric.
+Please check `example.ipynb` for an example of downloading the satellite map, localizing and using the Recall metric.
