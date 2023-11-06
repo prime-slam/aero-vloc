@@ -12,13 +12,13 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import cv2
-import faiss
 import numpy as np
 
 from tqdm import tqdm
 from typing import Optional, Tuple
 
 from aero_vloc.feature_matchers import FeatureMatcher
+from aero_vloc.index_searchers import IndexSearcher
 from aero_vloc.primitives import UAVImage, Map
 from aero_vloc.utils import get_new_size
 from aero_vloc.vpr_systems import VPRSystem
@@ -36,25 +36,22 @@ class LocalizationPipeline:
         vpr_system: VPRSystem,
         sat_map: Map,
         feature_matcher: FeatureMatcher,
+        index_searcher: IndexSearcher,
     ):
         self.vpr_system = vpr_system
         self.feature_matcher = feature_matcher
         self.sat_map = sat_map
+        self.index = index_searcher
 
         global_descs = []
         for image in tqdm(
             sat_map, desc="Calculating of global descriptors for source DB"
         ):
             global_descs.append(self.vpr_system.get_image_descriptor(image.path))
-        self.source_global_descs = np.asarray(global_descs)
-
-        self.faiss_index = faiss.IndexFlatL2(self.source_global_descs.shape[1])
-        self.faiss_index.add(self.source_global_descs)
+        self.index.create(np.asarray(global_descs))
 
         local_features = []
-        for image in tqdm(
-            sat_map, desc="Calculating of local features for source DB"
-        ):
+        for image in tqdm(sat_map, desc="Calculating of local features for source DB"):
             local_features.append(self.feature_matcher.get_feature(image.path))
         self.source_local_features = np.asarray(local_features)
 
@@ -65,8 +62,7 @@ class LocalizationPipeline:
         query_global_desc = np.expand_dims(
             self.vpr_system.get_image_descriptor(query_image.path), axis=0
         )
-        _, global_predictions = self.faiss_index.search(query_global_desc, k_closest)
-        global_predictions = global_predictions[0]
+        global_predictions = self.index.search(query_global_desc, k_closest)
 
         query_local_features = self.feature_matcher.get_feature(query_image.path)
         filtered_db_features = self.source_local_features[global_predictions]

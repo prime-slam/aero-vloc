@@ -11,10 +11,22 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-from aero_vloc.feature_matchers import LightGlue, SuperGlue
-from aero_vloc.index_searchers import FaissSearcher
-from aero_vloc.localization_pipeline import LocalizationPipeline
-from aero_vloc.map_downloader import MapDownloader
-from aero_vloc.metrics import recall
-from aero_vloc.primitives import Map, UAVSeq
-from aero_vloc.vpr_systems import AnyLoc, CosPlace, EigenPlaces, MixVPR, NetVLAD
+import faiss
+import numpy as np
+
+from aero_vloc.index_searchers.index_searcher import IndexSearcher
+
+
+class FaissSearcher(IndexSearcher):
+    def __init__(self):
+        self.faiss_index = None
+
+    def create(self, descriptors: np.ndarray):
+        self.faiss_index = faiss.IndexFlatL2(descriptors.shape[1])
+        self.faiss_index.add(descriptors)
+
+    def search(self, descriptor: np.ndarray, k_closest: int) -> int:
+        _, global_predictions = self.faiss_index.search(descriptor, k_closest)
+        global_predictions = global_predictions[0]
+
+        return global_predictions

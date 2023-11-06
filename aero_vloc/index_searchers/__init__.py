@@ -11,10 +11,5 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-from aero_vloc.feature_matchers import LightGlue, SuperGlue
-from aero_vloc.index_searchers import FaissSearcher
-from aero_vloc.localization_pipeline import LocalizationPipeline
-from aero_vloc.map_downloader import MapDownloader
-from aero_vloc.metrics import recall
-from aero_vloc.primitives import Map, UAVSeq
-from aero_vloc.vpr_systems import AnyLoc, CosPlace, EigenPlaces, MixVPR, NetVLAD
+from aero_vloc.index_searchers.faiss_searcher import FaissSearcher
+from aero_vloc.index_searchers.index_searcher import IndexSearcher
