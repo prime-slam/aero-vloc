@@ -53,5 +53,3 @@ class EigenPlaces(VPRSystem):
             descriptor = self.model(image)
         descriptor = descriptor.cpu().numpy()[0]
         return descriptor
-
-    get_image_descriptor.__doc__ = VPRSystem.get_image_descriptor.__doc__

@@ -68,5 +68,3 @@ class NetVLAD(VPRSystem):
             vlad_global_pca = get_pca_encoding(self.model, vlad_global)
             desc = vlad_global_pca.detach().cpu().numpy()[0]
         return desc
-
-    get_image_descriptor.__doc__ = VPRSystem.get_image_descriptor.__doc__

@@ -73,6 +73,3 @@ class LightGlue(FeatureMatcher):
                 matched_kpts_reference = points_db
 
         return matched_index, matched_kpts_query, matched_kpts_reference
-
-    get_feature.__doc__ = FeatureMatcher.get_feature.__doc__
-    match_feature.__doc__ = FeatureMatcher.match_feature.__doc__

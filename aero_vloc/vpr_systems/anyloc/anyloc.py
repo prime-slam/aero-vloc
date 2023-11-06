@@ -55,5 +55,3 @@ class AnyLoc(VPRSystem):
         gd = self.vlad.generate(ret.cpu().squeeze())
         gd_np = gd.numpy()
         return gd_np
-
-    get_image_descriptor.__doc__ = VPRSystem.get_image_descriptor.__doc__
