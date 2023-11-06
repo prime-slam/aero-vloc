@@ -50,13 +50,13 @@ class LocalizationPipeline:
 
         self.faiss_index = faiss.IndexFlatL2(self.source_global_descs.shape[1])
         self.faiss_index.add(self.source_global_descs)
-        if self.feature_matcher is not None:
-            local_features = []
-            for image in tqdm(
-                sat_map, desc="Calculating of local features for source DB"
-            ):
-                local_features.append(self.feature_matcher.get_feature(image.path))
-            self.source_local_features = np.asarray(local_features)
+
+        local_features = []
+        for image in tqdm(
+            sat_map, desc="Calculating of local features for source DB"
+        ):
+            local_features.append(self.feature_matcher.get_feature(image.path))
+        self.source_local_features = np.asarray(local_features)
 
     def __retrieve_image(self, query_image: UAVImage, k_closest: int):
         if k_closest < 1:
