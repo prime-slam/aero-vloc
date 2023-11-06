@@ -18,8 +18,11 @@ from pathlib import Path
 
 
 class VPRSystem(ABC):
-    def __init__(self):
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+    def __init__(self, gpu_index: int = 0):
+        """
+        :param gpu_index: The index of the GPU to be used
+        """
+        self.device = f"cuda:{gpu_index}" if torch.cuda.is_available() else "cpu"
         print('Running inference on device "{}"'.format(self.device))
 
     @abstractmethod

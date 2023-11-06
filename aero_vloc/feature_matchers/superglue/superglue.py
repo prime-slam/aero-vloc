@@ -63,12 +63,13 @@ class SuperGlue(FeatureMatcher):
     matcher with SuperPoint extractor.
     """
 
-    def __init__(self, path_to_sg_weights, resize=800):
+    def __init__(self, path_to_sg_weights, resize=800, gpu_index: int = 0):
         """
         :param path_to_sg_weights: Path to SuperGlue weights
         :param resize: The size to which the larger side of the image will be reduced while maintaining the aspect ratio
+        :param gpu_index: The index of the GPU to be used
         """
-        super().__init__(resize)
+        super().__init__(resize, gpu_index)
         self.super_point = SuperPoint().eval().to(self.device)
         self.super_glue_matcher = (
             SuperGlueMatcher(path_to_sg_weights).eval().to(self.device)

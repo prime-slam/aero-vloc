@@ -28,12 +28,13 @@ class AnyLoc(VPRSystem):
     Implementation of [AnyLoc](https://github.com/AnyLoc/AnyLoc) global localization method.
     """
 
-    def __init__(self, c_centers_file: Path, resize: int = 800):
+    def __init__(self, c_centers_file: Path, resize: int = 800, gpu_index: int = 0):
         """
         :param c_centers_file: Path to clusters' centers
         :param resize: The size to which the larger side of the image will be reduced while maintaining the aspect ratio
+        :param gpu_index: The index of the GPU to be used
         """
-        super().__init__()
+        super().__init__(gpu_index)
         self.resize = resize
         self.extractor = DinoV2ExtractFeatures(
             dino_model="dinov2_vitg14", layer=31, facet="value", device=self.device

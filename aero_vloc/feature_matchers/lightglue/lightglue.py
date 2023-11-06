@@ -30,11 +30,12 @@ class LightGlue(FeatureMatcher):
     matcher with SuperPoint extractor.
     """
 
-    def __init__(self, resize: int = 800):
+    def __init__(self, resize: int = 800, gpu_index: int = 0):
         """
         :param resize: The size to which the larger side of the image will be reduced while maintaining the aspect ratio
+        :param gpu_index: The index of the GPU to be used
         """
-        super().__init__(resize)
+        super().__init__(resize, gpu_index)
         self.super_point = SuperPoint().eval().to(self.device)
         self.light_glue_matcher = (
             LightGlueMatcher(features="superpoint").eval().to(self.device)

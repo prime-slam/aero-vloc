@@ -30,12 +30,13 @@ class NetVLAD(VPRSystem):
     Implementation of [NetVLAD](https://github.com/QVPR/Patch-NetVLAD) global localization method.
     """
 
-    def __init__(self, path_to_weights: str, resize: int = 800):
+    def __init__(self, path_to_weights: str, resize: int = 800, gpu_index: int = 0):
         """
         :param path_to_weights: Path to the weights
         :param resize: The size to which the larger side of the image will be reduced while maintaining the aspect ratio
+        :param gpu_index: The index of the GPU to be used
         """
-        super().__init__()
+        super().__init__(gpu_index)
         self.resize = resize
         encoder_dim, encoder = get_backend()
 

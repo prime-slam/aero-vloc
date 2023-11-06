@@ -27,11 +27,12 @@ class MixVPR(VPRSystem):
     Implementation of [MixVPR](https://github.com/amaralibey/MixVPR) global localization method.
     """
 
-    def __init__(self, ckpt_path):
+    def __init__(self, ckpt_path, gpu_index: int = 0):
         """
         :param ckpt_path: Path to the checkpoint file
+        :param gpu_index: The index of the GPU to be used
         """
-        super().__init__()
+        super().__init__(gpu_index)
         self.model = VPRModel(
             backbone_arch="resnet50",
             layers_to_crop=[4],

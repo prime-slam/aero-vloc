@@ -26,14 +26,19 @@ class CosPlace(VPRSystem):
     """
 
     def __init__(
-        self, backbone: str = "ResNet101", fc_output_dim: int = 2048, resize: int = 800
+        self,
+        backbone: str = "ResNet101",
+        fc_output_dim: int = 2048,
+        resize: int = 800,
+        gpu_index: int = 0,
     ):
         """
         :param backbone: Type of backbone
         :param fc_output_dim: Dimension of descriptors
         :param resize: The size to which the larger side of the image will be reduced while maintaining the aspect ratio
+        :param gpu_index: The index of the GPU to be used
         """
-        super().__init__()
+        super().__init__(gpu_index)
         self.resize = resize
         self.backbone = backbone
         self.fc_output_dim = fc_output_dim
