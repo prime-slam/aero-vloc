@@ -57,5 +57,4 @@ class SequentialSearcher(IndexSearcher):
             if is_correct:
                 correct_seqs.append(possible_seq)
         predictions = list(set([correct_seq[-1] for correct_seq in correct_seqs]))
-        print(len(possible_seqs), len(correct_seqs), len(predictions))
         return predictions
