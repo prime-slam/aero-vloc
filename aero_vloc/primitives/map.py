@@ -11,6 +11,8 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+import numpy as np
+
 from pathlib import Path
 
 from aero_vloc.primitives.map_tile import MapTile
@@ -52,8 +54,50 @@ class Map:
                 float(bottom_right_lon),
             )
             tiles.append(map_tile)
+
+        self.width = None
+        for i, tile in enumerate(tiles[1:]):
+            if tile.top_left_lat != tiles[i].top_left_lat:
+                self.width = i + 1
+                break
+        if self.width is None:
+            self.width = len(tiles)
+        self.height = int(len(tiles) / self.width)
         self.tiles = tiles
 
     def __iter__(self):
         for map_tile in self.tiles:
             yield map_tile
+
+    def __getitem__(self, key):
+        return self.tiles[key]
+
+    def get_neighboring_tiles(self, query_index: int) -> list[int]:
+        """
+        Returns the indexes of neighboring tiles
+
+        :param query_index: Index of the tile for which you need to find neighbors
+        :return: Neighboring tile indices
+        """
+        x, y = query_index % self.width, query_index // self.width
+        potential_neighbors = [
+            (x - 1, y - 1),
+            (x, y - 1),
+            (x + 1, y - 1),
+            (x - 1, y),
+            (x + 1, y),
+            (x - 1, y + 1),
+            (x, y + 1),
+            (x + 1, y + 1),
+        ]
+
+        result_neighbors = []
+        for x, y in potential_neighbors:
+            if (0 <= x < self.width) and (0 <= y < self.height):
+                result_neighbors.append(self.width * y + x)
+        return result_neighbors
+
+    def are_neighbors(self, index_1: int, index_2: int) -> bool:
+        """Checks if given tiles are adjacent"""
+        neighbors = self.get_neighboring_tiles(index_1)
+        return index_2 in neighbors
