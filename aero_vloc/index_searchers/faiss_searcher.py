@@ -19,13 +19,14 @@ from aero_vloc.index_searchers.index_searcher import IndexSearcher
 
 class FaissSearcher(IndexSearcher):
     def __init__(self):
-        self.faiss_index = None
+        """Simple one-shot bruteforce FAISS matcher"""
+        super().__init__()
 
     def create(self, descriptors: np.ndarray):
         self.faiss_index = faiss.IndexFlatL2(descriptors.shape[1])
         self.faiss_index.add(descriptors)
 
-    def search(self, descriptor: np.ndarray, k_closest: int) -> int:
+    def search(self, descriptor: np.ndarray, k_closest: int) -> list[int]:
         _, global_predictions = self.faiss_index.search(descriptor, k_closest)
         global_predictions = global_predictions[0]
 

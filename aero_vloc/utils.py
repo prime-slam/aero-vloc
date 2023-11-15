@@ -58,3 +58,27 @@ def load_image_for_sp(image_path: Path, resize: int):
     h_new, w_new = get_new_size(h, w, resize)
     grayim = cv2.resize(grayim, (w_new, h_new), interpolation=cv2.INTER_AREA)
     return torch.from_numpy(grayim / 255.0).float()[None, None]
+
+
+def visualize_matches(
+    matched_kpts_query, matched_kpts_reference, sat_image, drone_img, resize
+):
+    drone_img = cv2.imread(str(drone_img.path))
+    h_new, w_new = get_new_size(*drone_img.shape[:2], resize)
+    drone_img = cv2.resize(drone_img, (w_new, h_new))
+    sat_img = cv2.resize(
+        cv2.imread(str(sat_image.path)),
+        (resize, resize),
+    )
+    matches = [cv2.DMatch(i, i, 1) for i in range(len(matched_kpts_query))]
+    matched_kpts_query = [cv2.KeyPoint(x, y, 1) for x, y in matched_kpts_query]
+    matched_kpts_reference = [cv2.KeyPoint(x, y, 1) for x, y in matched_kpts_reference]
+    img = cv2.drawMatches(
+        drone_img,
+        matched_kpts_query,
+        sat_img,
+        matched_kpts_reference,
+        matches,
+        None,
+    )
+    return img

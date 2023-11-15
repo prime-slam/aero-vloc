@@ -18,6 +18,10 @@ from abc import ABC, abstractmethod
 
 
 class IndexSearcher(ABC):
+    def __init__(self):
+        self.faiss_index = None
+        self.computed_query_predictions = []
+
     @abstractmethod
     def create(self, descriptors: np.ndarray):
         """
@@ -27,11 +31,18 @@ class IndexSearcher(ABC):
         pass
 
     @abstractmethod
-    def search(self, descriptor: np.ndarray, k_closest: int) -> int:
+    def search(self, descriptor: np.ndarray, k_closest: int) -> list[int]:
         """
         Finds the index of the matched database descriptor
         :param descriptor: Query descriptor
         :param k_closest: Specifies how many predictions should be returned
-        :return: Index of the matched descriptor
+        :return: Indices of the matched descriptors
         """
         pass
+
+    def end_of_query_seq(self):
+        """
+        Notifies the indexing system that the sequence from the UAV
+        is over to prepare it for the following sequence
+        """
+        self.computed_query_predictions = []

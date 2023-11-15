@@ -11,6 +11,7 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+import numpy as np
 import torch
 
 from pathlib import Path
@@ -50,11 +51,10 @@ class LightGlue(FeatureMatcher):
         feats["image_size"] = torch.tensor(shape)[None].to(img).float()
         return feats
 
-    def match_feature(self, query_features, db_features):
-        matched_index = None
-        matched_kpts_query = None
-        matched_kpts_reference = None
-        max_matches = 0
+    def match_feature(self, query_features, db_features, k_best):
+        num_matches = []
+        matched_kpts_query = []
+        matched_kpts_reference = []
 
         for db_index, db_feature in enumerate(
             tqdm(db_features, desc="Matching of LG features")
@@ -65,12 +65,17 @@ class LightGlue(FeatureMatcher):
             matches = matches["matches"][0]
             points_query = query_features["keypoints"][0][matches[..., 0]].cpu().numpy()
             points_db = db_feature["keypoints"][0][matches[..., 1]].cpu().numpy()
-            num_matches = len(points_query)
+            num_matches.append(len(points_query))
+            matched_kpts_query.append(points_query)
+            matched_kpts_reference.append(points_db)
 
-            if num_matches > max_matches:
-                max_matches = num_matches
-                matched_index = db_index
-                matched_kpts_query = points_query
-                matched_kpts_reference = points_db
+        num_matches = np.array(num_matches)
+        matched_kpts_query = np.array(matched_kpts_query, dtype=object)
+        matched_kpts_reference = np.array(matched_kpts_reference, dtype=object)
 
-        return matched_index, matched_kpts_query, matched_kpts_reference
+        res_indices = (-num_matches).argsort()[:k_best]
+        return (
+            res_indices,
+            matched_kpts_query[res_indices],
+            matched_kpts_reference[res_indices],
+        )

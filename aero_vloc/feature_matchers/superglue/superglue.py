@@ -83,11 +83,10 @@ class SuperGlue(FeatureMatcher):
         features["shape"] = shape
         return features
 
-    def match_feature(self, query_features, db_features):
-        matched_index = None
-        matched_kpts_query = None
-        matched_kpts_reference = None
-        max_matches = 0
+    def match_feature(self, query_features, db_features, k_best):
+        num_matches = []
+        matched_kpts_query = []
+        matched_kpts_reference = []
 
         for db_index, db_feature in enumerate(
             tqdm(db_features, desc="Matching of SG features")
@@ -102,14 +101,17 @@ class SuperGlue(FeatureMatcher):
 
             matches = pred["matches0"][0].cpu().numpy()
             valid = matches > -1
-            matched_kpts0 = kpts0[valid]
-            matched_kpts1 = kpts1[matches[valid]]
-            num_matches = np.sum(valid)
+            matched_kpts_query.append(kpts0[valid])
+            matched_kpts_reference.append(kpts1[matches[valid]])
+            num_matches.append(np.sum(valid))
 
-            if num_matches > max_matches:
-                max_matches = num_matches
-                matched_index = db_index
-                matched_kpts_query = matched_kpts0
-                matched_kpts_reference = matched_kpts1
+        num_matches = np.array(num_matches)
+        matched_kpts_query = np.array(matched_kpts_query, dtype=object)
+        matched_kpts_reference = np.array(matched_kpts_reference, dtype=object)
 
-        return matched_index, matched_kpts_query, matched_kpts_reference
+        res_indices = (-num_matches).argsort()[:k_best]
+        return (
+            res_indices,
+            matched_kpts_query[res_indices],
+            matched_kpts_reference[res_indices],
+        )

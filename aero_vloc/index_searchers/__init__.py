@@ -13,3 +13,4 @@
 #  limitations under the License.
 from aero_vloc.index_searchers.faiss_searcher import FaissSearcher
 from aero_vloc.index_searchers.index_searcher import IndexSearcher
+from aero_vloc.index_searchers.sequential_searcher import SequentialSearcher
