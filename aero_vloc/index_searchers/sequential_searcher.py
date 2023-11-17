@@ -37,24 +37,26 @@ class SequentialSearcher(IndexSearcher):
         self.faiss_index.add(descriptors)
 
     def search(self, descriptor: np.ndarray, k_closest: int) -> list[int]:
-        _, global_predictions = self.faiss_index.search(descriptor, k_closest)
-        global_predictions = global_predictions[0]
-        self.computed_query_predictions.append(global_predictions)
+        _, global_predictions_indices = self.faiss_index.search(descriptor, k_closest)
+        global_predictions_indices = global_predictions_indices[0]
+        self.computed_query_predictions_indices.append(global_predictions_indices)
 
         possible_seqs = list(
-            itertools.product(*self.computed_query_predictions[-self.last_n :])
+            itertools.product(*self.computed_query_predictions_indices[-self.last_n :])
         )
         correct_seqs = []
         for possible_seq in possible_seqs:
             is_correct = True
-            for prediction in possible_seq[1:]:
+            for prediction_index in possible_seq[1:]:
                 if not (
-                    self.sat_map.are_neighbors(prediction, possible_seq[0])
-                    or prediction == possible_seq[0]
+                    self.sat_map.are_neighbors(prediction_index, possible_seq[0])
+                    or prediction_index == possible_seq[0]
                 ):
                     is_correct = False
                     break
             if is_correct:
                 correct_seqs.append(possible_seq)
-        predictions = list(set([correct_seq[-1] for correct_seq in correct_seqs]))
-        return predictions
+        predictions_indices = list(
+            set([correct_seq[-1] for correct_seq in correct_seqs])
+        )
+        return predictions_indices

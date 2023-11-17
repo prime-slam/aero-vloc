@@ -20,7 +20,7 @@ from abc import ABC, abstractmethod
 class IndexSearcher(ABC):
     def __init__(self):
         self.faiss_index = None
-        self.computed_query_predictions = []
+        self.computed_query_predictions_indices = []
 
     @abstractmethod
     def create(self, descriptors: np.ndarray):
@@ -45,4 +45,4 @@ class IndexSearcher(ABC):
         Notifies the indexing system that the sequence from the UAV
         is over to prepare it for the following sequence
         """
-        self.computed_query_predictions = []
+        self.computed_query_predictions_indices = []
