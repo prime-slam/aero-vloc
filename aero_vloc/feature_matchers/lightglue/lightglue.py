@@ -70,12 +70,12 @@ class LightGlue(FeatureMatcher):
             matched_kpts_reference.append(points_db)
 
         num_matches = np.array(num_matches)
-        matched_kpts_query = np.array(matched_kpts_query, dtype=object)
-        matched_kpts_reference = np.array(matched_kpts_reference, dtype=object)
-
         res_indices = (-num_matches).argsort()[:k_best]
+
+        matched_kpts_query = [matched_kpts_query[i] for i in res_indices]
+        matched_kpts_reference = [matched_kpts_reference[i] for i in res_indices]
         return (
             res_indices,
-            matched_kpts_query[res_indices],
-            matched_kpts_reference[res_indices],
+            matched_kpts_query,
+            matched_kpts_reference,
         )
