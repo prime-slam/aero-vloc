@@ -16,12 +16,11 @@ import numpy as np
 
 from typing import Optional, Tuple
 
-from aero_vloc.geo_referencers.geo_referencer import GeoReferencer
 from aero_vloc.primitives import MapTile, UAVImage
 from aero_vloc.utils import get_new_size
 
 
-class HomographyReferencer(GeoReferencer):
+class HomographyEstimator:
     def __call__(
         self,
         matched_kpts_query: list,
@@ -29,7 +28,21 @@ class HomographyReferencer(GeoReferencer):
         query_image: UAVImage,
         sat_image: MapTile,
         resize_param: int,
-    ) -> Optional[Tuple[float, float]]:
+    ) -> Optional[Tuple[int, int]]:
+        """
+        Determines UAV pixel coordinates using key point correspondences
+        between an aerial photo and a satellite image.
+
+        Lengths of lists of key points of aerial photo and satellite image should be the same.
+        Correspondences of key points are determined by order in the list.
+
+        :param matched_kpts_query: Keypoints of the query image
+        :param matched_kpts_reference: Keypoints of the satellite image
+        :param query_image: UAV image
+        :param sat_image: Satellite map tile
+        :param resize_param: The image resize parameter that was used in keypoint matching
+        :return: Pixel coordinates of the center of query image. None if the location cannot be determined
+        """
         if len(matched_kpts_reference) < 4:
             print("Not enough points for homography")
             return None
@@ -51,13 +64,4 @@ class HomographyReferencer(GeoReferencer):
         moments = cv2.moments(dst)
         cX = int(moments["m10"] / moments["m00"])
         cY = int(moments["m01"] / moments["m00"])
-
-        center = (cX / resize_param, cY / resize_param)
-
-        latitude = sat_image.top_left_lat + abs(center[1]) * (
-            sat_image.bottom_right_lat - sat_image.top_left_lat
-        )
-        longitude = sat_image.top_left_lon + abs(center[0]) * (
-            sat_image.bottom_right_lon - sat_image.top_left_lon
-        )
-        return latitude, longitude
+        return cX, cY

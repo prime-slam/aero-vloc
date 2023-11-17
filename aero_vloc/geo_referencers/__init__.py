@@ -12,4 +12,5 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 from aero_vloc.geo_referencers.geo_referencer import GeoReferencer
-from aero_vloc.geo_referencers.homography_referencer import HomographyReferencer
+from aero_vloc.geo_referencers.google_maps_referencer import GoogleMapsReferencer
+from aero_vloc.geo_referencers.linear_referencer import LinearReferencer

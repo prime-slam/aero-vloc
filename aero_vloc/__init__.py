@@ -12,7 +12,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 from aero_vloc.feature_matchers import LightGlue, SuperGlue
-from aero_vloc.geo_referencers import HomographyReferencer
+from aero_vloc.geo_referencers import GoogleMapsReferencer, LinearReferencer
+from aero_vloc.homography_estimator import HomographyEstimator
 from aero_vloc.index_searchers import FaissSearcher, SequentialSearcher
 from aero_vloc.localization_pipeline import LocalizationPipeline
 from aero_vloc.map_downloader import MapDownloader
