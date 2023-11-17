@@ -11,5 +11,6 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-from aero_vloc.metrics.reference_recall import reference_recall
-from aero_vloc.metrics.retrieval_recall import retrieval_recall
+from aero_vloc.geo_referencers.geo_referencer import GeoReferencer
+from aero_vloc.geo_referencers.google_maps_referencer import GoogleMapsReferencer
+from aero_vloc.geo_referencers.linear_referencer import LinearReferencer

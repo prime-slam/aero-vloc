@@ -11,4 +11,23 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-from aero_vloc.localization_pipeline.localization_pipeline import LocalizationPipeline
+from abc import ABC, abstractmethod
+from typing import Tuple
+
+from aero_vloc.primitives import MapTile
+
+
+class GeoReferencer(ABC):
+    @abstractmethod
+    def get_lat_lon(
+        self, map_tile: MapTile, pixel: Tuple[int, int], resize: int
+    ) -> Tuple[float, float]:
+        """
+        Finds geographic coordinates of a given pixel on a satellite image
+
+        :param map_tile: Satellite map tile
+        :param pixel: Pixel coordinates
+        :param resize: The image resize parameter that was used in keypoint matching
+        :return: Latitude and longitude of the pixel
+        """
+        pass

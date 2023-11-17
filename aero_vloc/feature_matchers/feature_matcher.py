@@ -37,11 +37,12 @@ class FeatureMatcher(ABC):
         pass
 
     @abstractmethod
-    def match_feature(self, query_features, db_features):
+    def match_feature(self, query_features, db_features, k_best):
         """
         Matches query features with database features
         :param query_features: Features for matching
         :param db_features: Database features
-        :return: Index of matched image from database, chosen query features, chosen DB features
+        :param k_best: Determines how many top predictions will be returned
+        :return: Indices of matched images from database, chosen query features, chosen DB features
         """
         pass

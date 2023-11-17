@@ -11,37 +11,42 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+import numpy as np
+
+from typing import Tuple
+
 from aero_vloc.localization_pipeline import LocalizationPipeline
 from aero_vloc.metrics.utils import calculate_distance
 from aero_vloc.primitives import UAVSeq
 
 
-def recall(
-    drone_seq: UAVSeq,
+def reference_recall(
+    uav_seq: UAVSeq,
     localization_pipeline: LocalizationPipeline,
     k_closest: int,
     threshold: int,
-) -> float:
+) -> Tuple[float, list[bool]]:
     """
-    The metric finds the number of correctly matched frames
+    The metric finds the number of correctly matched frames based on georeference error
 
-    :param drone_seq: Sequence of UAV images
+    :param uav_seq: Sequence of UAV images
     :param localization_pipeline: Instance of LocalizationPipeline class
     :param k_closest: Specifies how many predictions for each query the global localization should make.
     If this value is greater than 1, the best match will be chosen with local matcher
     :param threshold: The distance between query and reference geocoordinates,
     below which the frame will be considered correctly matched
 
-    :return: Recall value
+    :return: Recall value, boolean mask showing which frames were considered as successfully matched
     """
-    positives = 0
-    for drone_image in drone_seq:
-        res = localization_pipeline.localize(drone_image, k_closest, visualize=False)
-        if res is not None:
-            lat, lon, _ = res
+    mask = []
+    localization_results = localization_pipeline(uav_seq, k_closest)
+    for loc_res, uav_image in zip(localization_results, uav_seq):
+        if loc_res is not None:
+            lat, lon = loc_res
             error = calculate_distance(
-                lat, lon, drone_image.gt_latitude, drone_image.gt_longitude
+                lat, lon, uav_image.gt_latitude, uav_image.gt_longitude
             )
-            if error < threshold:
-                positives += 1
-    return positives / len(drone_seq.uav_images)
+            mask.append(error < threshold)
+        else:
+            mask.append(False)
+    return np.sum(mask) / len(uav_seq.uav_images), mask
