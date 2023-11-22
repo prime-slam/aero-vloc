@@ -67,7 +67,6 @@ class LocalizationPipeline:
                 matched_kpts_query,
                 matched_kpts_reference,
                 query_image,
-                chosen_sat_image,
                 self.retrieval_system.feature_matcher.resize,
             )
             if estimator_result is None:

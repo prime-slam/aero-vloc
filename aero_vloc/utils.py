@@ -61,22 +61,23 @@ def load_image_for_sp(image_path: Path, resize: int):
 
 
 def visualize_matches(
-    matched_kpts_query, matched_kpts_reference, sat_image, drone_img, resize
+    matched_kpts_query, matched_kpts_reference, sat_image, drone_image, resize
 ):
-    drone_img = cv2.imread(str(drone_img.path))
-    h_new, w_new = get_new_size(*drone_img.shape[:2], resize)
-    drone_img = cv2.resize(drone_img, (w_new, h_new))
-    sat_img = cv2.resize(
-        cv2.imread(str(sat_image.path)),
-        (resize, resize),
-    )
+    drone_image = cv2.imread(str(drone_image.path))
+    h_new, w_new = get_new_size(*drone_image.shape[:2], resize)
+    drone_image = cv2.resize(drone_image, (w_new, h_new))
+
+    sat_image = cv2.imread(str(sat_image.path))
+    h_new, w_new = get_new_size(*sat_image.shape[:2], resize)
+    sat_image = cv2.resize(sat_image, (w_new, h_new))
+
     matches = [cv2.DMatch(i, i, 1) for i in range(len(matched_kpts_query))]
     matched_kpts_query = [cv2.KeyPoint(x, y, 1) for x, y in matched_kpts_query]
     matched_kpts_reference = [cv2.KeyPoint(x, y, 1) for x, y in matched_kpts_reference]
     img = cv2.drawMatches(
-        drone_img,
+        drone_image,
         matched_kpts_query,
-        sat_img,
+        sat_image,
         matched_kpts_reference,
         matches,
         None,
