@@ -11,6 +11,7 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+import cv2
 import math
 import requests
 
@@ -54,19 +55,20 @@ class MapDownloader:
         self.folder_to_save = folder_to_save
 
         # Maximum allowed shape and scale
-        self.img_height = 640
-        self.img_width = 640
-        self.scale = 2
+        self.img_size = 640
+        self.img_scale = 2
         self.map_type = "satellite"
 
+        # The number of pixels from the bottom to be cropped to remove the watermark
+        self.bottom_crop = 50
+        self.crop_scale = self.bottom_crop / (self.img_size * self.img_scale)
+
         # Magic constants
-        self.map_height = 256
-        self.map_width = 256
-        self.x_scale = math.pow(2, zoom) / (self.img_width / self.map_width)
-        self.y_scale = math.pow(2, zoom) / (self.img_height / self.map_width)
+        self.map_size = 256
+        self.map_scale = math.pow(2, zoom) / (self.img_size / self.map_size)
 
     def __lat_lon_to_point(self, lat, lon):
-        x = (lon + 180) * (self.map_width / 360)
+        x = (lon + 180) * (self.map_size / 360)
         y = (
             (
                 1
@@ -76,14 +78,14 @@ class MapDownloader:
                 / math.pi
             )
             / 2
-        ) * self.map_height
+        ) * self.map_size
 
         return x, y
 
     def __point_to_lat_lon(self, x, y):
-        lon = x / self.map_width * 360 - 180
+        lon = x / self.map_size * 360 - 180
 
-        n = math.pi - 2 * math.pi * y / self.map_height
+        n = math.pi - 2 * math.pi * y / self.map_size
         lat = 180 / math.pi * math.atan(0.5 * (math.exp(n) - math.exp(-n)))
 
         return lat, lon
@@ -91,14 +93,17 @@ class MapDownloader:
     def __get_image_bounds(self, lat, lon):
         centre_x, centre_y = self.__lat_lon_to_point(lat, lon)
 
-        south_east_x = centre_x + (self.map_width / 2) / self.x_scale
-        south_east_y = centre_y + (self.map_height / 2) / self.y_scale
+        south_east_x = centre_x + (self.map_size / 2) / self.map_scale
+        south_east_y = (
+            centre_y
+            + (self.map_size / 2 - self.map_size * self.crop_scale) / self.map_scale
+        )
         bottom_right_lat, bottom_right_lon = self.__point_to_lat_lon(
             south_east_x, south_east_y
         )
 
-        north_west_x = centre_x - (self.map_width / 2) / self.x_scale
-        north_east_y = centre_y - (self.map_height / 2) / self.y_scale
+        north_west_x = centre_x - (self.map_size / 2) / self.map_scale
+        north_east_y = centre_y - (self.map_size / 2) / self.map_scale
         top_left_lat, top_left_lon = self.__point_to_lat_lon(north_west_x, north_east_y)
 
         return top_left_lat, top_left_lon, bottom_right_lat, bottom_right_lon
@@ -106,7 +111,9 @@ class MapDownloader:
     def __get_lat_step(self, lat, lon):
         point_x, point_y = self.__lat_lon_to_point(lat, lon)
 
-        stepped_point_y = point_y - (self.map_height / self.y_scale)
+        stepped_point_y = point_y - (
+            (self.map_size - self.map_size * self.crop_scale) / self.map_scale
+        )
         new_lat, _ = self.__point_to_lat_lon(point_x, stepped_point_y)
 
         lat_step = lat - new_lat
@@ -121,15 +128,15 @@ class MapDownloader:
             + "&zoom="
             + str(self.zoom)
             + "&size="
-            + str(self.img_width)
+            + str(self.img_size)
             + "x"
-            + str(self.img_height)
+            + str(self.img_size)
             + "&key="
             + self.api_key
             + "&maptype="
             + self.map_type
             + "&scale="
-            + str(self.scale)
+            + str(self.img_scale)
         )
         return requests.get(url).content
 
@@ -151,8 +158,12 @@ class MapDownloader:
             while lon <= self.south_east_lon:
                 image = self.__request_image(lat, lon)
                 filename = f"{str(index).zfill(4)}.png"
-                with open(self.folder_to_save / filename, "wb") as image_file:
+                path_to_image = str(self.folder_to_save / filename)
+                with open(path_to_image, "wb") as image_file:
                     image_file.write(image)
+                    image = cv2.imread(path_to_image)
+                    image = image[: -self.bottom_crop]
+                    cv2.imwrite(path_to_image, image)
                 (
                     top_left_lat,
                     top_left_lon,

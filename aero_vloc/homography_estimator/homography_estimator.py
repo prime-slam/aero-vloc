@@ -16,7 +16,7 @@ import numpy as np
 
 from typing import Optional, Tuple
 
-from aero_vloc.primitives import MapTile, UAVImage
+from aero_vloc.primitives import UAVImage
 from aero_vloc.utils import get_new_size
 
 
@@ -26,7 +26,6 @@ class HomographyEstimator:
         matched_kpts_query: list,
         matched_kpts_reference: list,
         query_image: UAVImage,
-        sat_image: MapTile,
         resize_param: int,
     ) -> Optional[Tuple[int, int]]:
         """
@@ -39,7 +38,6 @@ class HomographyEstimator:
         :param matched_kpts_query: Keypoints of the query image
         :param matched_kpts_reference: Keypoints of the satellite image
         :param query_image: UAV image
-        :param sat_image: Satellite map tile
         :param resize_param: The image resize parameter that was used in keypoint matching
         :return: Pixel coordinates of the center of query image. None if the location cannot be determined
         """
