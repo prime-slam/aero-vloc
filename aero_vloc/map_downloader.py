@@ -59,7 +59,7 @@ class MapDownloader:
         self.img_scale = 2
         self.map_type = "satellite"
 
-        # Number of pixels at the bottom to be cropped
+        # The number of pixels from the bottom to be cropped to remove the watermark
         self.bottom_crop = 50
         self.crop_scale = self.bottom_crop / (self.img_size * self.img_scale)
 
