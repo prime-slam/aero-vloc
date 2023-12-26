@@ -11,10 +11,4 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-from aero_vloc.vpr_systems.anyloc import AnyLoc
-from aero_vloc.vpr_systems.cosplace import CosPlace
-from aero_vloc.vpr_systems.eigenplaces import EigenPlaces
-from aero_vloc.vpr_systems.mixvpr import MixVPR
-from aero_vloc.vpr_systems.netvlad import NetVLAD
-from aero_vloc.vpr_systems.salad import SALAD
-from aero_vloc.vpr_systems.vpr_system import VPRSystem
+from aero_vloc.vpr_systems.salad.salad import SALAD

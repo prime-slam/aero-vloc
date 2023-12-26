@@ -21,4 +21,4 @@ from aero_vloc.metrics import reference_recall, retrieval_recall
 from aero_vloc.primitives import Map, UAVSeq
 from aero_vloc.retrieval_system import RetrievalSystem
 from aero_vloc.utils import visualize_matches
-from aero_vloc.vpr_systems import AnyLoc, CosPlace, EigenPlaces, MixVPR, NetVLAD
+from aero_vloc.vpr_systems import AnyLoc, CosPlace, EigenPlaces, MixVPR, NetVLAD, SALAD
