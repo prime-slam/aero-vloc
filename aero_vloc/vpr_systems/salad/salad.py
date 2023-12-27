@@ -42,7 +42,7 @@ class SALAD(VPRSystem):
 
     def get_image_descriptor(self, image_path: Path):
         image = Image.open(image_path).convert("RGB")
-        image = transform_image(image, self.resize)[None, :].to(self.device)
+        image = transform_image(image, self.resize).to(self.device)
         _, h, w = image.shape
         h_new, w_new = (h // 14) * 14, (w // 14) * 14
         img_cropped = tvf.CenterCrop((h_new, w_new))(image)[None, ...]
