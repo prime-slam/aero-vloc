@@ -44,7 +44,6 @@ class RetrievalSystem:
         for image in tqdm(
             sat_map, desc="Calculating of global descriptors for source DB"
         ):
-            image.descriptor = self.vpr_system.get_image_descriptor(image.path)
             self.global_descs.append(self.vpr_system.get_image_descriptor(image.path))
         self.index.create(np.asarray(self.global_descs))
 
