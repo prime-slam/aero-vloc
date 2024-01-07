@@ -46,7 +46,6 @@
 import numpy as np
 import torch
 
-from pathlib import Path
 from tqdm import tqdm
 
 from aero_vloc.feature_detectors import SuperPoint
@@ -54,7 +53,7 @@ from aero_vloc.feature_matchers.feature_matcher import FeatureMatcher
 from aero_vloc.feature_matchers.superglue.model.superglue_matcher import (
     SuperGlueMatcher,
 )
-from aero_vloc.utils import load_image_for_sp
+from aero_vloc.utils import transform_image_for_sp
 
 
 class SuperGlue(FeatureMatcher):
@@ -75,8 +74,8 @@ class SuperGlue(FeatureMatcher):
             SuperGlueMatcher(path_to_sg_weights).eval().to(self.device)
         )
 
-    def get_feature(self, image_path: Path):
-        inp = load_image_for_sp(image_path, self.resize).to(self.device)
+    def get_feature(self, image: np.ndarray):
+        inp = transform_image_for_sp(image, self.resize).to(self.device)
         shape = inp.shape[2:]
         with torch.no_grad():
             features = self.super_point({"image": inp})

@@ -12,9 +12,9 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import torch
+import numpy as np
 
 from abc import ABC, abstractmethod
-from pathlib import Path
 
 
 class VPRSystem(ABC):
@@ -26,10 +26,10 @@ class VPRSystem(ABC):
         print('Running inference on device "{}"'.format(self.device))
 
     @abstractmethod
-    def get_image_descriptor(self, image_path: Path):
+    def get_image_descriptor(self, image: np.ndarray):
         """
         Gets the descriptor of the image given
-        :param image_path:
-        :return:
+        :param image: Image in the OpenCV format
+        :return: Descriptor of the image
         """
         pass

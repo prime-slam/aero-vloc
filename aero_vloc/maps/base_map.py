@@ -18,10 +18,10 @@ from pathlib import Path
 from aero_vloc.primitives.map_tile import MapTile
 
 
-class Map:
+class BaseMap:
     """
-    The class represents the satellite map required for UAV localization.
-    It is assumed that the map is divided into tiles.
+    The class represents the base satellite map required for UAV localization.
+    It is assumed that the map is divided into non-overlapping tiles.
     """
 
     def __init__(self, path_to_metadata: Path):
@@ -47,23 +47,48 @@ class Map:
                 bottom_right_lon,
             ) = line.split()
             map_tile = MapTile(
-                map_folder / filename,
+                [[map_folder / filename]],
                 float(top_left_lat),
                 float(top_left_lon),
                 float(bottom_right_lat),
                 float(bottom_right_lon),
             )
             tiles.append(map_tile)
-
-        self.width = None
-        for i, tile in enumerate(tiles[1:]):
-            if tile.top_left_lat != tiles[i].top_left_lat:
-                self.width = i + 1
-                break
-        if self.width is None:
-            self.width = len(tiles)
-        self.height = int(len(tiles) / self.width)
         self.tiles = tiles
+        height, width = self.shape
+        tile_height, tile_width = self.tile_shape
+        self.pixel_shape = height * tile_height, width * tile_width
+
+    @property
+    def shape(self) -> tuple[int, int]:
+        """
+        :return: Number of tiles by height and by width
+        """
+        width = None
+        for i, tile in enumerate(self.tiles[1:]):
+            if tile.top_left_lat != self.tiles[i].top_left_lat:
+                width = i + 1
+                break
+        if width is None:
+            width = len(self.tiles)
+        height = int(len(self.tiles) / width)
+        return height, width
+
+    @property
+    def tile_shape(self) -> tuple[int, int]:
+        """
+        :return: Height and width of tiles in the map
+        """
+        tile_img = self.tiles[0].image
+        tile_height, tile_width = tile_img.shape[:2]
+        return tile_height, tile_width
+
+    @property
+    def tiles_2d(self) -> np.ndarray:
+        """
+        :return: Reshaped map based on the number of tiles in height and width
+        """
+        return np.array(self.tiles).reshape(self.shape)
 
     def __iter__(self):
         for map_tile in self.tiles:
@@ -72,6 +97,9 @@ class Map:
     def __getitem__(self, key):
         return self.tiles[key]
 
+    def __len__(self):
+        return len(self.tiles)
+
     def get_neighboring_tiles(self, query_index: int) -> list[int]:
         """
         Returns the indexes of neighboring tiles
@@ -79,7 +107,8 @@ class Map:
         :param query_index: Index of the tile for which you need to find neighbors
         :return: Neighboring tile indices
         """
-        x, y = query_index % self.width, query_index // self.width
+        height, width = self.shape
+        x, y = query_index % width, query_index // width
         potential_neighbors = [
             (x - 1, y - 1),
             (x, y - 1),
@@ -93,8 +122,8 @@ class Map:
 
         result_neighbors = []
         for x, y in potential_neighbors:
-            if (0 <= x < self.width) and (0 <= y < self.height):
-                result_neighbors.append(self.width * y + x)
+            if (0 <= x < width) and (0 <= y < height):
+                result_neighbors.append(width * y + x)
         return result_neighbors
 
     def are_neighbors(self, index_1: int, index_2: int) -> bool:
