@@ -12,10 +12,10 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import cv2
+import numpy as np
 import torch
 import torchvision
 
-from pathlib import Path
 from PIL import Image
 from torchvision.transforms import InterpolationMode
 from typing import Tuple
@@ -30,11 +30,12 @@ def get_new_size(height: int, width: int, resize: int):
         return height_new, width_new
 
 
-def transform_image(
-    image: Image,
+def transform_image_for_vpr(
+    image: np.ndarray,
     resize: int | Tuple[int, int],
     interpolation: InterpolationMode = InterpolationMode.BILINEAR,
 ):
+    image = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
     if isinstance(resize, int):
         h_new, w_new = get_new_size(image.height, image.width, resize)
     else:
@@ -52,8 +53,8 @@ def transform_image(
     return transformed_image
 
 
-def load_image_for_sp(image_path: Path, resize: int):
-    grayim = cv2.imread(str(image_path), cv2.IMREAD_GRAYSCALE)
+def transform_image_for_sp(image: np.ndarray, resize: int):
+    grayim = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     h, w = grayim.shape[:2]
     h_new, w_new = get_new_size(h, w, resize)
     grayim = cv2.resize(grayim, (w_new, h_new), interpolation=cv2.INTER_AREA)
@@ -63,13 +64,11 @@ def load_image_for_sp(image_path: Path, resize: int):
 def visualize_matches(
     matched_kpts_query, matched_kpts_reference, sat_image, drone_image, resize
 ):
-    drone_image = cv2.imread(str(drone_image.path))
-    h_new, w_new = get_new_size(*drone_image.shape[:2], resize)
-    drone_image = cv2.resize(drone_image, (w_new, h_new))
+    h_new, w_new = get_new_size(*drone_image.image.shape[:2], resize)
+    drone_image = cv2.resize(drone_image.image, (w_new, h_new))
 
-    sat_image = cv2.imread(str(sat_image.path))
-    h_new, w_new = get_new_size(*sat_image.shape[:2], resize)
-    sat_image = cv2.resize(sat_image, (w_new, h_new))
+    h_new, w_new = get_new_size(*sat_image.image.shape[:2], resize)
+    sat_image = cv2.resize(sat_image.image, (w_new, h_new))
 
     matches = [cv2.DMatch(i, i, 1) for i in range(len(matched_kpts_query))]
     matched_kpts_query = [cv2.KeyPoint(x, y, 1) for x, y in matched_kpts_query]

@@ -31,7 +31,6 @@ class MapDownloader:
         south_east_lat: float,
         south_east_lon: float,
         zoom: int,
-        overlap_level: float,
         api_key: str,
         folder_to_save: Path,
     ):
@@ -41,7 +40,6 @@ class MapDownloader:
         :param south_east_lat: Latitude of the southeast point of the map
         :param south_east_lon: Longitude of the southeast point of the map
         :param zoom: Zoom level of the map
-        :param overlap_level: Shows how much neighboring images overlap each other. Float between 0 and 1
         :param api_key: API key for Google Maps API
         :param folder_to_save: Path to save map
         """
@@ -50,7 +48,6 @@ class MapDownloader:
         self.south_east_lat = south_east_lat
         self.south_east_lon = south_east_lon
         self.zoom = zoom
-        self.overlap_level = overlap_level
         self.api_key = api_key
         self.folder_to_save = folder_to_save
 
@@ -174,9 +171,9 @@ class MapDownloader:
                     f"{filename} {top_left_lat} {top_left_lon} {bottom_right_lat} {bottom_right_lon}\n"
                 )
 
-                lon = lon + (lon_step * (1 - self.overlap_level))
+                lon = lon + lon_step
                 index += 1
 
             lat_step = self.__get_lat_step(lat, lon)
-            lat = lat + (lat_step * (1 - self.overlap_level))
+            lat = lat + lat_step
         metadata_file.close()

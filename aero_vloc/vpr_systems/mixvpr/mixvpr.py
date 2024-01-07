@@ -11,13 +11,11 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+import numpy as np
 import torch
 import torchvision
 
-from pathlib import Path
-from PIL import Image
-
-from aero_vloc.utils import transform_image
+from aero_vloc.utils import transform_image_for_vpr
 from aero_vloc.vpr_systems.vpr_system import VPRSystem
 from aero_vloc.vpr_systems.mixvpr.model.mixvpr_model import VPRModel
 
@@ -53,10 +51,9 @@ class MixVPR(VPRSystem):
         self.model.eval().to(self.device)
         print(f"Loaded model from {ckpt_path} successfully!")
 
-    def get_image_descriptor(self, image_path: Path):
+    def get_image_descriptor(self, image: np.ndarray):
         # Note that images must be resized to 320x320
-        image = Image.open(image_path).convert("RGB")
-        image = transform_image(
+        image = transform_image_for_vpr(
             image, (320, 320), torchvision.transforms.InterpolationMode.BICUBIC
         )[None, :].to(self.device)
         with torch.no_grad():

@@ -11,13 +11,12 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+import numpy as np
 import torch
 
-from pathlib import Path
-from PIL import Image
 from torchvision import transforms as tvf
 
-from aero_vloc.utils import transform_image
+from aero_vloc.utils import transform_image_for_vpr
 from aero_vloc.vpr_systems.vpr_system import VPRSystem
 
 
@@ -40,9 +39,8 @@ class SALAD(VPRSystem):
         self.model = torch.hub.load("serizba/salad", "dinov2_salad")
         self.model.eval().to(self.device)
 
-    def get_image_descriptor(self, image_path: Path):
-        image = Image.open(image_path).convert("RGB")
-        image = transform_image(image, self.resize).to(self.device)
+    def get_image_descriptor(self, image: np.ndarray):
+        image = transform_image_for_vpr(image, self.resize).to(self.device)
         _, h, w = image.shape
         h_new, w_new = (h // 14) * 14, (w // 14) * 14
         img_cropped = tvf.CenterCrop((h_new, w_new))(image)[None, ...]

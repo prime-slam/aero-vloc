@@ -14,7 +14,6 @@
 import numpy as np
 import torch
 
-from pathlib import Path
 from tqdm import tqdm
 
 from aero_vloc.feature_detectors import SuperPoint
@@ -22,7 +21,7 @@ from aero_vloc.feature_matchers import FeatureMatcher
 from aero_vloc.feature_matchers.lightglue.model.lightglue_matcher import (
     LightGlueMatcher,
 )
-from aero_vloc.utils import load_image_for_sp
+from aero_vloc.utils import transform_image_for_sp
 
 
 class LightGlue(FeatureMatcher):
@@ -42,8 +41,8 @@ class LightGlue(FeatureMatcher):
             LightGlueMatcher(features="superpoint").eval().to(self.device)
         )
 
-    def get_feature(self, image_path: Path):
-        img = load_image_for_sp(image_path, self.resize).to(self.device)
+    def get_feature(self, image: np.ndarray):
+        img = transform_image_for_sp(image, self.resize).to(self.device)
         shape = img.shape[-2:][::-1]
         with torch.no_grad():
             feats = self.super_point({"image": img})

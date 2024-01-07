@@ -11,14 +11,14 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+import numpy as np
 import torch
 import torchvision
 
 from pathlib import Path
-from PIL import Image
 from torchvision import transforms as tvf
 
-from aero_vloc.utils import transform_image
+from aero_vloc.utils import transform_image_for_vpr
 from aero_vloc.vpr_systems.vpr_system import VPRSystem
 from aero_vloc.vpr_systems.anyloc.models import DinoV2ExtractFeatures, VLAD
 
@@ -43,9 +43,8 @@ class AnyLoc(VPRSystem):
         self.vlad = VLAD(num_clusters=32, desc_dim=None, c_centers_path=c_centers_file)
         self.vlad.fit()
 
-    def get_image_descriptor(self, image_path: Path):
-        image = Image.open(image_path).convert("RGB")
-        image = transform_image(
+    def get_image_descriptor(self, image: np.ndarray):
+        image = transform_image_for_vpr(
             image, self.resize, torchvision.transforms.InterpolationMode.BICUBIC
         ).to(self.device)
         _, h, w = image.shape

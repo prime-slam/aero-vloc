@@ -18,7 +18,8 @@ from tqdm import tqdm
 
 from aero_vloc.feature_matchers import FeatureMatcher
 from aero_vloc.index_searchers import IndexSearcher
-from aero_vloc.primitives import UAVImage, Map
+from aero_vloc.maps import Map
+from aero_vloc.primitives import UAVImage
 from aero_vloc.vpr_systems import VPRSystem
 
 
@@ -41,15 +42,15 @@ class RetrievalSystem:
         self.index = index_searcher
 
         self.global_descs = []
-        for image in tqdm(
+        for tile in tqdm(
             sat_map, desc="Calculating of global descriptors for source DB"
         ):
-            self.global_descs.append(self.vpr_system.get_image_descriptor(image.path))
+            self.global_descs.append(self.vpr_system.get_image_descriptor(tile.image))
         self.index.create(np.asarray(self.global_descs))
 
         local_features = []
-        for image in tqdm(sat_map, desc="Calculating of local features for source DB"):
-            local_features.append(self.feature_matcher.get_feature(image.path))
+        for tile in tqdm(sat_map, desc="Calculating of local features for source DB"):
+            local_features.append(self.feature_matcher.get_feature(tile.image))
         self.source_local_features = np.asarray(local_features)
 
     def __call__(
@@ -71,14 +72,14 @@ class RetrievalSystem:
         list of matched reference keypoints for every query -- reference pair (optional)
         """
         query_global_desc = np.expand_dims(
-            self.vpr_system.get_image_descriptor(query_image.path), axis=0
+            self.vpr_system.get_image_descriptor(query_image.image), axis=0
         )
         global_predictions = self.index.search(query_global_desc, vpr_k_closest)
 
         if feature_matcher_k_closest is None:
             return global_predictions, None, None
 
-        query_local_features = self.feature_matcher.get_feature(query_image.path)
+        query_local_features = self.feature_matcher.get_feature(query_image.image)
         filtered_db_features = self.source_local_features[global_predictions]
         (
             local_predictions,

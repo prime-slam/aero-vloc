@@ -16,7 +16,7 @@ import itertools
 import numpy as np
 
 from aero_vloc.index_searchers.index_searcher import IndexSearcher
-from aero_vloc.primitives import Map
+from aero_vloc.maps import Map
 
 
 class SequentialSearcher(IndexSearcher):
