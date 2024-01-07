@@ -49,9 +49,10 @@ class Map(BaseMap):
         super().__init__(path_to_metadata)
         self.geo_referencer = geo_referencer
 
-        old_tile_h, old_tile_w = self.tile_shape
+        old_tile_h, old_tile_w = self.tiles[0].shape
         map_pixel_height, map_pixel_width = self.pixel_shape
         new_tile_h, new_tile_w = int(old_tile_h // zoom), int(old_tile_w // zoom)
+        tiles_2d = self.tiles_2d
 
         # Generating of the new tiles
         tiles = []
@@ -76,7 +77,7 @@ class Map(BaseMap):
                     new_bottom_right_x // old_tile_w,
                     new_bottom_right_y // old_tile_h,
                 )
-                involved_tiles = self.tiles_2d[
+                involved_tiles = tiles_2d[
                     top_left_index_y : bottom_right_index_y + 1,
                     top_left_index_x : bottom_right_index_x + 1,
                 ]

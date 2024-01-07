@@ -56,7 +56,7 @@ class BaseMap:
             tiles.append(map_tile)
         self.tiles = tiles
         height, width = self.shape
-        tile_height, tile_width = self.tile_shape
+        tile_height, tile_width = self.tiles[0].shape
         self.pixel_shape = height * tile_height, width * tile_width
 
     @property
@@ -73,15 +73,6 @@ class BaseMap:
             width = len(self.tiles)
         height = int(len(self.tiles) / width)
         return height, width
-
-    @property
-    def tile_shape(self) -> tuple[int, int]:
-        """
-        :return: Height and width of tiles in the map
-        """
-        tile_img = self.tiles[0].image
-        tile_height, tile_width = tile_img.shape[:2]
-        return tile_height, tile_width
 
     @property
     def tiles_2d(self) -> np.ndarray:

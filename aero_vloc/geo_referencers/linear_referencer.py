@@ -22,8 +22,7 @@ class LinearReferencer(GeoReferencer):
     def get_lat_lon(
         self, map_tile: MapTile, pixel: Tuple[int, int], resize: int = None
     ) -> Tuple[float, float]:
-        map_image = map_tile.image
-        height, width = map_image.shape[:2]
+        height, width = map_tile.shape
         if resize is not None:
             height, width = get_new_size(height, width, resize)
 

@@ -14,6 +14,7 @@
 import cv2
 import numpy as np
 
+from functools import cached_property
 from pathlib import Path
 
 
@@ -69,3 +70,11 @@ class MapTile:
                 top_left_y : bottom_right_y + 1, top_left_x : bottom_right_x + 1
             ]
         return result
+
+    @cached_property
+    def shape(self) -> tuple[int, int]:
+        """
+        :return: Height and width of the tile
+        """
+        height, width = self.image.shape[:2]
+        return height, width
