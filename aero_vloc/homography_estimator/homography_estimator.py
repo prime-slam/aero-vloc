@@ -44,9 +44,7 @@ class HomographyEstimator:
         if len(matched_kpts_reference) < 4:
             print("Not enough points for homography")
             return None
-        h_new, w_new = get_new_size(
-            *cv2.imread(str(query_image.path)).shape[:2], resize_param
-        )
+        h_new, w_new = get_new_size(*query_image.image.shape[:2], resize_param)
         M, mask = cv2.findHomography(
             matched_kpts_query, matched_kpts_reference, cv2.RANSAC, 5.0
         )

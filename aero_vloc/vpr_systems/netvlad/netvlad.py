@@ -11,12 +11,10 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+import numpy as np
 import torch
 
-from pathlib import Path
-from PIL import Image
-
-from aero_vloc.utils import transform_image
+from aero_vloc.utils import transform_image_for_vpr
 from aero_vloc.vpr_systems.netvlad.model.models_generic import (
     get_backend,
     get_model,
@@ -56,12 +54,8 @@ class NetVLAD(VPRSystem):
         self.model = self.model.to(self.device)
         self.model.eval()
 
-    def get_image_descriptor(
-        self,
-        image_path: Path,
-    ):
-        image = Image.open(image_path).convert("RGB")
-        image = transform_image(image, self.resize)[None, :].to(self.device)
+    def get_image_descriptor(self, image: np.ndarray):
+        image = transform_image_for_vpr(image, self.resize)[None, :].to(self.device)
 
         with torch.no_grad():
             image_encoding = self.model.encoder(image)

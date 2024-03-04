@@ -11,6 +11,9 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+import cv2
+import numpy as np
+
 from pathlib import Path
 
 
@@ -23,3 +26,7 @@ class UAVImage:
         self.path = path
         self.gt_latitude = gt_latitude
         self.gt_longitude = gt_longitude
+
+    @property
+    def image(self) -> np.ndarray:
+        return cv2.imread(str(self.path))

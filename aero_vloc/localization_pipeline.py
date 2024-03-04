@@ -13,7 +13,6 @@
 #  limitations under the License.
 from typing import Optional, Tuple
 
-from aero_vloc.geo_referencers import GeoReferencer
 from aero_vloc.homography_estimator import HomographyEstimator
 from aero_vloc.primitives import UAVSeq
 from aero_vloc.retrieval_system import RetrievalSystem
@@ -21,18 +20,15 @@ from aero_vloc.retrieval_system import RetrievalSystem
 
 class LocalizationPipeline:
     """
-    Allows to create a localizator based on the retrieval system,
-    homography estimator and one of the georeference methods.
+    Allows to create a localizator based on the retrieval system and homography estimator.
     """
 
     def __init__(
         self,
         retrieval_system: RetrievalSystem,
-        geo_referencer: GeoReferencer,
         homography_estimator: HomographyEstimator,
     ):
         self.retrieval_system = retrieval_system
-        self.geo_referencer = geo_referencer
         self.homography_estimator = homography_estimator
 
     def __call__(
@@ -41,8 +37,7 @@ class LocalizationPipeline:
         k_closest: int,
     ) -> list[Optional[Tuple[float, float]]]:
         """
-        Calculates UAV locations using the retrieval system,
-        homography estimator and one of the georeference methods.
+        Calculates UAV locations using the retrieval system and homography estimator.
 
         :param query_seq: The sequence of images for which locations should be calculated
         :param k_closest: Specifies how many predictions for each query the global localization should make.
@@ -72,7 +67,10 @@ class LocalizationPipeline:
             if estimator_result is None:
                 localization_results.append(None)
                 continue
-            latitude, longitude = self.geo_referencer.get_lat_lon(
+            (
+                latitude,
+                longitude,
+            ) = self.retrieval_system.sat_map.geo_referencer.get_lat_lon(
                 chosen_sat_image,
                 estimator_result,
                 self.retrieval_system.feature_matcher.resize,
