@@ -57,10 +57,18 @@ class GoogleMapsReferencer(GeoReferencer):
         top_left_x, top_left_y = self.__lat_lon_to_world(
             map_tile.top_left_lat, map_tile.top_left_lon
         )
-        if resize is None:
-            resize = max(map_tile.image.shape[:2])
-        desired_x = top_left_x + (self.map_size * abs(pixel[0]) / resize) / self.scale
-        desired_y = top_left_y + (self.map_size * abs(pixel[1]) / resize) / self.scale
+        chosen_resize = self.img_size * 2
+        if resize is not None:
+            tile_size = max(map_tile.image.shape[:2])
+            if tile_size > resize:
+                chosen_resize = chosen_resize * (resize / tile_size)
+
+        desired_x = (
+            top_left_x + (self.map_size * abs(pixel[0]) / chosen_resize) / self.scale
+        )
+        desired_y = (
+            top_left_y + (self.map_size * abs(pixel[1]) / chosen_resize) / self.scale
+        )
 
         lat, lon = self.__world_to_lat_lon(desired_x, desired_y)
         return lat, lon
