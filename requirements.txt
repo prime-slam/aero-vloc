@@ -1,11 +1,12 @@
 einops==0.7.0
-faiss_gpu==1.7.2
+faiss_cpu==1.7.4
 fast_pytorch_kmeans==0.2.0.1
 geopy==2.4.0
 numpy==1.26.1
 opencv_python==4.8.1.78
 Pillow==10.1.0
 prettytable==3.9.0
+pytest==7.2.2
 pytorch_lightning==2.1.0
 pytorch-metric-learning==2.4.1
 Requests==2.31.0
