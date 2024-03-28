@@ -1,5 +1,5 @@
 einops==0.7.0
-faiss_gpu==1.7.2
+faiss_cpu==1.7.4
 fast_pytorch_kmeans==0.2.0.1
 geopy==2.4.0
 numpy==1.26.1
