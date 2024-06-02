@@ -11,7 +11,7 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-from aero_vloc.feature_matchers import LightGlue, SuperGlue
+from aero_vloc.feature_matchers import LightGlue, SelaLocal, SuperGlue
 from aero_vloc.geo_referencers import GoogleMapsReferencer, LinearReferencer
 from aero_vloc.homography_estimator import HomographyEstimator
 from aero_vloc.index_searchers import FaissSearcher, SequentialSearcher
@@ -22,4 +22,12 @@ from aero_vloc.metrics import reference_recall, retrieval_recall
 from aero_vloc.primitives import UAVSeq
 from aero_vloc.retrieval_system import RetrievalSystem
 from aero_vloc.utils import visualize_matches
-from aero_vloc.vpr_systems import AnyLoc, CosPlace, EigenPlaces, MixVPR, NetVLAD, SALAD
+from aero_vloc.vpr_systems import (
+    AnyLoc,
+    CosPlace,
+    EigenPlaces,
+    MixVPR,
+    NetVLAD,
+    SALAD,
+    Sela,
+)
