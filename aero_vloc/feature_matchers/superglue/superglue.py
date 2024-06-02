@@ -79,7 +79,7 @@ class SuperGlue(FeatureMatcher):
         shape = inp.shape[2:]
         with torch.no_grad():
             features = self.super_point({"image": inp})
-        features = {k: v.to('cpu') for k, v in features.items()}
+        features = {k: v.to("cpu") for k, v in features.items()}
         features["shape"] = shape
         return features
 
@@ -91,9 +91,18 @@ class SuperGlue(FeatureMatcher):
         for db_index, db_feature in enumerate(
             tqdm(db_features, desc="Matching of SG features")
         ):
-            keys = ['keypoints', 'scores', 'descriptors']
-            pred = {k + "0": (v.to(self.device) if k in keys else v) for k, v in query_features.items()}
-            pred = {**pred, **{k + "1": (v.to(self.device) if k in keys else v) for k, v in db_feature.items()}}
+            keys = ["keypoints", "scores", "descriptors"]
+            pred = {
+                k + "0": (v.to(self.device) if k in keys else v)
+                for k, v in query_features.items()
+            }
+            pred = {
+                **pred,
+                **{
+                    k + "1": (v.to(self.device) if k in keys else v)
+                    for k, v in db_feature.items()
+                },
+            }
             kpts0 = pred["keypoints0"][0].cpu().numpy()
             kpts1 = pred["keypoints1"][0].cpu().numpy()
 
