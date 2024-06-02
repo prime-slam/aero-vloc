@@ -20,7 +20,10 @@ from aero_vloc.primitives import MapTile
 class GeoReferencer(ABC):
     @abstractmethod
     def get_lat_lon(
-        self, map_tile: MapTile, pixel: Tuple[int, int], resize: int = None
+        self,
+        map_tile: MapTile,
+        pixel: Tuple[int, int],
+        resize: int | Tuple[int, int] = None,
     ) -> Tuple[float, float]:
         """
         Finds geographic coordinates of a given pixel on a satellite image

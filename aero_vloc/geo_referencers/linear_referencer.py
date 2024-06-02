@@ -20,11 +20,19 @@ from aero_vloc.utils import get_new_size
 
 class LinearReferencer(GeoReferencer):
     def get_lat_lon(
-        self, map_tile: MapTile, pixel: Tuple[int, int], resize: int = None
+        self,
+        map_tile: MapTile,
+        pixel: Tuple[int, int],
+        resize: int | Tuple[int, int] = None,
     ) -> Tuple[float, float]:
         height, width = map_tile.shape
         if resize is not None:
-            height, width = get_new_size(height, width, resize)
+            if type(resize) is tuple:
+                height, width = resize
+            elif type(resize) is int:
+                height, width = get_new_size(height, width, resize)
+            else:
+                raise ValueError("Resize param should be int or Tuple[int, int]")
 
         lat = map_tile.top_left_lat + (abs(pixel[1]) / height) * (
             map_tile.bottom_right_lat - map_tile.top_left_lat

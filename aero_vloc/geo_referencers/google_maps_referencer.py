@@ -52,23 +52,33 @@ class GoogleMapsReferencer(GeoReferencer):
         return lat, lon
 
     def get_lat_lon(
-        self, map_tile: MapTile, pixel: Tuple[int, int], resize: int = None
+        self,
+        map_tile: MapTile,
+        pixel: Tuple[int, int],
+        resize: int | Tuple[int, int] = None,
     ) -> Tuple[float, float]:
         top_left_x, top_left_y = self.__lat_lon_to_world(
             map_tile.top_left_lat, map_tile.top_left_lon
         )
-        chosen_resize = self.img_size * 2
+        resize_x, resize_y = self.img_size * 2, self.img_size * 2
         if resize is not None:
-            tile_size = max(map_tile.image.shape[:2])
-            if tile_size > resize:
-                chosen_resize = chosen_resize * (resize / tile_size)
+            height, width = map_tile.shape
+            if type(resize) is tuple:
+                new_height, new_width = resize
+                if width > new_width:
+                    resize_x = resize_x * (new_width / width)
+                if height > new_height:
+                    resize_y = resize_y * (new_height / height)
+            elif type(resize) is int:
+                tile_size = max(height, width)
+                if tile_size > resize:
+                    resize_x = resize_x * (resize / tile_size)
+                    resize_y = resize_x
+            else:
+                raise ValueError("Resize param should be int or Tuple[int, int]")
 
-        desired_x = (
-            top_left_x + (self.map_size * abs(pixel[0]) / chosen_resize) / self.scale
-        )
-        desired_y = (
-            top_left_y + (self.map_size * abs(pixel[1]) / chosen_resize) / self.scale
-        )
+        desired_x = top_left_x + (self.map_size * abs(pixel[0]) / resize_x) / self.scale
+        desired_y = top_left_y + (self.map_size * abs(pixel[1]) / resize_y) / self.scale
 
         lat, lon = self.__world_to_lat_lon(desired_x, desired_y)
         return lat, lon
