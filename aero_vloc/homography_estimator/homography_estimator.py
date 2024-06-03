@@ -26,7 +26,7 @@ class HomographyEstimator:
         matched_kpts_query: list,
         matched_kpts_reference: list,
         query_image: UAVImage,
-        resize_param: int,
+        resize_param: int | Tuple[int, int],
     ) -> Optional[Tuple[int, int]]:
         """
         Determines UAV pixel coordinates using key point correspondences
@@ -44,7 +44,14 @@ class HomographyEstimator:
         if len(matched_kpts_reference) < 4:
             print("Not enough points for homography")
             return None
-        h_new, w_new = get_new_size(*query_image.image.shape[:2], resize_param)
+
+        if type(resize_param) is tuple:
+            h_new, w_new = resize_param
+        elif type(resize_param) is int:
+            h_new, w_new = get_new_size(*query_image.image.shape[:2], resize_param)
+        else:
+            raise ValueError("Resize param should be int or Tuple[int, int]")
+
         M, mask = cv2.findHomography(
             matched_kpts_query, matched_kpts_reference, cv2.RANSAC, 5.0
         )
@@ -58,6 +65,8 @@ class HomographyEstimator:
             return None
 
         moments = cv2.moments(dst)
+        if moments["m00"] == 0:
+            return None
         cX = int(moments["m10"] / moments["m00"])
         cY = int(moments["m01"] / moments["m00"])
         return cX, cY

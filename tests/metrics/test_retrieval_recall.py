@@ -12,9 +12,8 @@ def test_retrieval_recall():
     """
     localization_pipeline = create_localization_pipeline()
     retrieval_system = localization_pipeline.retrieval_system
-    recall, mask = avl.retrieval_recall(
+    recalls = avl.retrieval_recall(
         queries, retrieval_system, vpr_k_closest=2, feature_matcher_k_closest=1
     )
 
-    assert np.isclose(recall, 0.5)
-    assert mask == [True, False]
+    assert np.isclose(recalls[0], 0.5)

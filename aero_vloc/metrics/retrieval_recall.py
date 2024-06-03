@@ -13,8 +13,6 @@
 #  limitations under the License.
 import numpy as np
 
-from typing import Tuple
-
 from aero_vloc.primitives import UAVSeq
 from aero_vloc.retrieval_system import RetrievalSystem
 
@@ -24,7 +22,7 @@ def retrieval_recall(
     retrieval_system: RetrievalSystem,
     vpr_k_closest: int,
     feature_matcher_k_closest: int | None,
-) -> Tuple[float, list[bool]]:
+) -> np.ndarray:
     """
     The metric finds the number of correctly matched frames based on retrieval results
 
@@ -34,15 +32,18 @@ def retrieval_recall(
     :param feature_matcher_k_closest: Determines how many best images are to be obtained with the feature matcher
     If it is None, then the feature matcher turns off
 
-    :return: Recall value, boolean mask showing which frames were considered as successfully matched
+    :return: Array of Recall values for all N < vpr_k_closest,
+             or for all N < feature_matcher_k_closest if it is not None
     """
-    mask = []
+    if feature_matcher_k_closest is not None:
+        recalls = np.zeros(feature_matcher_k_closest)
+    else:
+        recalls = np.zeros(vpr_k_closest)
     for uav_image in uav_seq:
-        localized = False
         predictions, _, _ = retrieval_system(
             uav_image, vpr_k_closest, feature_matcher_k_closest
         )
-        for prediction in predictions:
+        for i, prediction in enumerate(predictions):
             map_tile = retrieval_system.sat_map[prediction]
             if (
                 map_tile.top_left_lat
@@ -53,8 +54,9 @@ def retrieval_recall(
                 < uav_image.gt_longitude
                 < map_tile.bottom_right_lon
             ):
-                localized = True
+                recalls[i:] += 1
                 break
-        mask.append(localized)
+
     retrieval_system.end_of_query_seq()
-    return np.sum(mask) / len(uav_seq.uav_images), mask
+    recalls = recalls / len(uav_seq.uav_images)
+    return recalls

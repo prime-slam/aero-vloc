@@ -47,6 +47,7 @@ class LightGlue(FeatureMatcher):
         with torch.no_grad():
             feats = self.super_point({"image": img})
         feats["descriptors"] = feats["descriptors"].transpose(-1, -2).contiguous()
+        feats = {k: v.to("cpu") for k, v in feats.items()}
         feats["image_size"] = torch.tensor(shape)[None].to(img).float()
         return feats
 
@@ -58,6 +59,15 @@ class LightGlue(FeatureMatcher):
         for db_index, db_feature in enumerate(
             tqdm(db_features, desc="Matching of LG features")
         ):
+            keys = ["keypoints", "scores", "descriptors"]
+            query_features = {
+                k: (v.to(self.device) if k in keys else v)
+                for k, v in query_features.items()
+            }
+            db_feature = {
+                k: (v.to(self.device) if k in keys else v)
+                for k, v in db_feature.items()
+            }
             matches = self.light_glue_matcher(
                 {"image0": query_features, "image1": db_feature}
             )

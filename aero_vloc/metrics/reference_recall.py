@@ -11,10 +11,6 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-import numpy as np
-
-from typing import Tuple
-
 from aero_vloc.localization_pipeline import LocalizationPipeline
 from aero_vloc.metrics.utils import calculate_distance
 from aero_vloc.primitives import UAVSeq
@@ -25,7 +21,7 @@ def reference_recall(
     localization_pipeline: LocalizationPipeline,
     k_closest: int,
     threshold: int,
-) -> Tuple[float, list[bool]]:
+) -> float:
     """
     The metric finds the number of correctly matched frames based on georeference error
 
@@ -36,9 +32,9 @@ def reference_recall(
     :param threshold: The distance between query and reference geocoordinates,
     below which the frame will be considered correctly matched
 
-    :return: Recall value, boolean mask showing which frames were considered as successfully matched
+    :return: Recall value
     """
-    mask = []
+    recall_value = 0
     localization_results = localization_pipeline(uav_seq, k_closest)
     for loc_res, uav_image in zip(localization_results, uav_seq):
         if loc_res is not None:
@@ -46,7 +42,6 @@ def reference_recall(
             error = calculate_distance(
                 lat, lon, uav_image.gt_latitude, uav_image.gt_longitude
             )
-            mask.append(error < threshold)
-        else:
-            mask.append(False)
-    return np.sum(mask) / len(uav_seq.uav_images), mask
+            if error < threshold:
+                recall_value += 1
+    return recall_value / len(uav_seq.uav_images)

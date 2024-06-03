@@ -13,6 +13,7 @@
 #  limitations under the License.
 import numpy as np
 
+from pathlib import Path
 from typing import Optional, Tuple
 from tqdm import tqdm
 
@@ -35,23 +36,36 @@ class RetrievalSystem:
         sat_map: Map,
         feature_matcher: FeatureMatcher,
         index_searcher: IndexSearcher,
+        path_to_descs: Path = None,
+        path_to_feat: Path = None,
     ):
         self.vpr_system = vpr_system
         self.feature_matcher = feature_matcher
         self.sat_map = sat_map
         self.index = index_searcher
 
-        self.global_descs = []
-        for tile in tqdm(
-            sat_map, desc="Calculating of global descriptors for source DB"
-        ):
-            self.global_descs.append(self.vpr_system.get_image_descriptor(tile.image))
-        self.index.create(np.asarray(self.global_descs))
+        if path_to_descs is None:
+            self.global_descs = []
+            for tile in tqdm(
+                sat_map, desc="Calculating of global descriptors for source DB"
+            ):
+                self.global_descs.append(
+                    self.vpr_system.get_image_descriptor(tile.image)
+                )
+            self.index.create(np.asarray(self.global_descs))
+        else:
+            self.index.create(np.load(path_to_descs, allow_pickle=True))
 
-        local_features = []
-        for tile in tqdm(sat_map, desc="Calculating of local features for source DB"):
-            local_features.append(self.feature_matcher.get_feature(tile.image))
-        self.source_local_features = np.asarray(local_features)
+        if path_to_feat is None:
+            local_features = []
+            for i, tile in enumerate(
+                tqdm(sat_map, desc="Calculating of local features for source DB")
+            ):
+                local_features.append(self.feature_matcher.get_feature(tile.image))
+            self.source_local_features = np.asarray(local_features)
+            del local_features
+        else:
+            self.source_local_features = np.load(path_to_feat, allow_pickle=True)
 
     def __call__(
         self,

@@ -1,4 +1,4 @@
-#  Copyright (c) 2023, Ivan Moskalenko, Anastasiia Kornilova
+#  Copyright (c) 2024, Ivan Moskalenko, Anastasiia Kornilova
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -11,7 +11,4 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-from aero_vloc.feature_matchers.feature_matcher import FeatureMatcher
-from aero_vloc.feature_matchers.lightglue import LightGlue
-from aero_vloc.feature_matchers.superglue import SuperGlue
-from aero_vloc.feature_matchers.sela import SelaLocal
+from aero_vloc.feature_matchers.sela.sela import SelaLocal

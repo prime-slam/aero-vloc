@@ -15,14 +15,11 @@ import numpy as np
 import torch
 
 from abc import ABC, abstractmethod
+from typing import Tuple
 
 
 class FeatureMatcher(ABC):
-    def __init__(self, resize: int, gpu_index: int = 0):
-        """
-        :param resize: The size to which the larger side of the image will be reduced while maintaining the aspect ratio
-        :param gpu_index: The index of the GPU to be used
-        """
+    def __init__(self, resize: int | Tuple[int, int], gpu_index: int = 0):
         self.resize = resize
         self.device = f"cuda:{gpu_index}" if torch.cuda.is_available() else "cpu"
         print('Running inference on device "{}"'.format(self.device))
