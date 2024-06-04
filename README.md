@@ -2,7 +2,7 @@
 [![Lint&Tests](https://github.com/prime-slam/aero-vloc/actions/workflows/ci.yml/badge.svg)](https://github.com/prime-slam/aero-vloc/actions/workflows/ci.yml)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-This is the official repository for the paper "Visual place recognition for aerial imagery: A survey".
+This is the official repository for the paper "[Visual place recognition for aerial imagery: A survey](https://arxiv.org/abs/2406.00885)".
 
 <img src="teaser.png">
 
@@ -33,5 +33,12 @@ However, you can use any dataset as a query sequence, please check `aero-vloc/pr
 ## Citation
 If this repository aids your research, please consider starring it ⭐️ and citing the paper:
 ```
-SOON!
+@misc{moskalenko2024visual,
+      title={Visual place recognition for aerial imagery: A survey}, 
+      author={Ivan Moskalenko and Anastasiia Kornilova and Gonzalo Ferrer},
+      year={2024},
+      eprint={2406.00885},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
 ```
