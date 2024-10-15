@@ -1,4 +1,4 @@
-#  Copyright (c) 2023, Ivan Moskalenko, Anastasiia Kornilova
+#  Copyright (c) 2023, Ivan Moskalenko, Anastasiia Kornilova, Mikhail Kiselyov
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -13,4 +13,4 @@
 #  limitations under the License.
 from aero_vloc.primitives.map_tile import MapTile
 from aero_vloc.primitives.uav_image import UAVImage
-from aero_vloc.primitives.uav_seq import UAVSeq
+from aero_vloc.primitives.uav_seq import UAVSeq, RegularSeq

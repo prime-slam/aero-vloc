@@ -1,4 +1,4 @@
-#  Copyright (c) 2023, Ivan Moskalenko, Anastasiia Kornilova
+#  Copyright (c) 2023, Ivan Moskalenko, Anastasiia Kornilova, Mikhail Kiselyov
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ from tqdm import tqdm
 
 from aero_vloc.feature_matchers import FeatureMatcher
 from aero_vloc.index_searchers import IndexSearcher
-from aero_vloc.maps import Map
 from aero_vloc.primitives import UAVImage
 from aero_vloc.vpr_systems import VPRSystem
+from aero_vloc.dataset import MyData
 
 
 class RetrievalSystem:
@@ -33,7 +33,7 @@ class RetrievalSystem:
     def __init__(
         self,
         vpr_system: VPRSystem,
-        sat_map: Map,
+        sat_map: MyData,
         feature_matcher: FeatureMatcher,
         index_searcher: IndexSearcher,
         path_to_descs: Path = None,
@@ -94,6 +94,84 @@ class RetrievalSystem:
             return global_predictions, None, None
 
         query_local_features = self.feature_matcher.get_feature(query_image.image)
+        filtered_db_features = self.source_local_features[global_predictions]
+        (
+            local_predictions,
+            matched_kpts_query,
+            matched_kpts_reference,
+        ) = self.feature_matcher.match_feature(
+            query_local_features, filtered_db_features, feature_matcher_k_closest
+        )
+        res_predictions = global_predictions[local_predictions]
+        return res_predictions, matched_kpts_query, matched_kpts_reference
+
+    def end_of_query_seq(self):
+        """
+        Notifies the retrieval system that the sequence from the UAV
+        is over to prepare it for the following sequence
+        """
+        self.index.end_of_query_seq()
+
+
+class MyRetrievalSystem:
+    """
+    Allows to create a predictor based on one of the VPR methods
+    and feature matcher like LightGlue/SuperGlue.
+    """
+
+    def __init__(
+        self,
+        vpr_system: VPRSystem,
+        dataset: MyData,
+        feature_matcher: FeatureMatcher,
+        index_searcher: IndexSearcher,
+    ):
+        self.vpr_system = vpr_system
+        self.feature_matcher = feature_matcher
+        self.dataset = dataset
+        self.index = index_searcher
+
+        self.global_descs = []
+        for image in tqdm(
+            dataset, desc="Calculating of global descriptors for source DB"
+        ):
+            self.global_descs.append(self.vpr_system.get_image_descriptor(image))
+        self.index.create(np.asarray(self.global_descs))
+
+        local_features = []
+        for i, image in enumerate(
+            tqdm(dataset, desc="Calculating of local features for source DB")
+        ):
+            local_features.append(self.feature_matcher.get_feature(image))
+        self.source_local_features = np.asarray(local_features)
+
+    def __call__(
+        self,
+        image,
+        vpr_k_closest: int,
+        feature_matcher_k_closest: int | None,
+    ) -> Tuple[list, Optional[list], Optional[list]]:
+        """
+        Retrieves the best matching images using the VPR system and keypoint matcher.
+
+        :param query_image: The image for which you need to find the most relevant images in the database
+        :param vpr_k_closest: Determines how many best images are to be obtained with the VPR system
+        :param feature_matcher_k_closest: Determines how many best images are to be obtained with the feature matcher
+        If it is None, then the feature matcher turns off
+
+        :return: List of predictions,
+        list of matched query keypoints for every query -- reference pair (optional),
+        list of matched reference keypoints for every query -- reference pair (optional)
+        """
+        query_global_desc = np.expand_dims(
+            self.vpr_system.get_image_descriptor(image), axis=0
+        )
+        global_predictions = self.index.search(query_global_desc, vpr_k_closest)
+
+        if feature_matcher_k_closest is None:
+            return global_predictions, None, None
+
+        query_local_features = self.feature_matcher.get_feature(image)
         filtered_db_features = self.source_local_features[global_predictions]
         (
             local_predictions,

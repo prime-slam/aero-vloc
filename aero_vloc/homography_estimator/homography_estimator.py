@@ -48,7 +48,7 @@ class HomographyEstimator:
         if type(resize_param) is tuple:
             h_new, w_new = resize_param
         elif type(resize_param) is int:
-            h_new, w_new = get_new_size(*query_image.image.shape[:2], resize_param)
+            h_new, w_new = get_new_size(*query_image.shape[:2], resize_param)
         else:
             raise ValueError("Resize param should be int or Tuple[int, int]")
 

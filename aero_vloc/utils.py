@@ -1,4 +1,4 @@
-#  Copyright (c) 2023, Ivan Moskalenko, Anastasiia Kornilova
+#  Copyright (c) 2023, Ivan Moskalenko, Anastasiia Kornilova, Mikhail Kiselyov
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -35,7 +35,9 @@ def transform_image_for_vpr(
     resize: int | Tuple[int, int],
     interpolation: InterpolationMode = InterpolationMode.BILINEAR,
 ):
-    image = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+    # image = np.transpose(image, (1, 2, 0))
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    image = Image.fromarray(image)
     if isinstance(resize, int):
         h_new, w_new = get_new_size(image.height, image.width, resize)
     else:

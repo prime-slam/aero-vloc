@@ -1,4 +1,4 @@
-#  Copyright (c) 2023, Ivan Moskalenko, Anastasiia Kornilova
+#  Copyright (c) 2023, Ivan Moskalenko, Anastasiia Kornilova, Mikhail Kiselyov
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@ from typing import Optional, Tuple
 from aero_vloc.homography_estimator import HomographyEstimator
 from aero_vloc.primitives import UAVSeq
 from aero_vloc.retrieval_system import RetrievalSystem
+from aero_vloc.dataset import MyQueries
 
 
 class LocalizationPipeline:
@@ -33,7 +34,54 @@ class LocalizationPipeline:
 
     def __call__(
         self,
-        query_seq: UAVSeq,
+        query_seq: MyQueries,
+        k_closest: int,
+    # ) -> list[Optional[Tuple[float, float]]]:
+    ) -> list[int]:
+        """
+        Calculates UAV locations using the retrieval system and homography estimator.
+
+        :param query_seq: The sequence of images for which locations should be calculated
+        :param k_closest: Specifies how many predictions for each query the global localization should make.
+        :return: List of geocoordinates. Also, the values can be None if the location could not be determined
+        """
+        localization_results = []
+        positives_per_query = query_seq.get_positives()
+        for query_image, positives in zip(query_seq, positives_per_query):
+            (
+                res_prediction,
+                matched_kpts_query,
+                matched_kpts_reference,
+            ) = self.retrieval_system(
+                query_image, k_closest, feature_matcher_k_closest=1
+            )
+
+            res_prediction = res_prediction[0]
+            matched_kpts_query = matched_kpts_query[0]
+            matched_kpts_reference = matched_kpts_reference[0]
+
+            chosen_sat_image = self.retrieval_system.dataset[res_prediction]
+            localization_results.append(res_prediction)
+        self.retrieval_system.end_of_query_seq()
+        return localization_results
+
+
+class MyLocalizationPipeline:
+    """
+    Allows to create a localizator based on the retrieval system and homography estimator.
+    """
+
+    def __init__(
+        self,
+        retrieval_system: RetrievalSystem,
+        homography_estimator: HomographyEstimator,
+    ):
+        self.retrieval_system = retrieval_system
+        self.homography_estimator = homography_estimator
+
+    def __call__(
+        self,
+        query_seq: MyQueries,
         k_closest: int,
     ) -> list[Optional[Tuple[float, float]]]:
         """
