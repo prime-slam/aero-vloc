@@ -11,16 +11,14 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+from aero_vloc.dataset import Data, Queries
 from aero_vloc.feature_matchers import LightGlue, SelaLocal, SuperGlue
-from aero_vloc.geo_referencers import GoogleMapsReferencer, LinearReferencer
 from aero_vloc.homography_estimator import HomographyEstimator
-from aero_vloc.index_searchers import FaissSearcher#, SequentialSearcher
+from aero_vloc.index_searchers import FaissSearcher
 from aero_vloc.localization_pipeline import LocalizationPipeline
-# from aero_vloc.map_downloader import MapDownloader
-# from aero_vloc.maps import Map
 from aero_vloc.metrics import reference_recall, retrieval_recall
 from aero_vloc.primitives import UAVSeq
-from aero_vloc.retrieval_system import RetrievalSystem, MyRetrievalSystem
+from aero_vloc.retrieval_system import RetrievalSystem
 from aero_vloc.utils import visualize_matches
 from aero_vloc.vpr_systems import (
     AnyLoc,
@@ -31,4 +29,3 @@ from aero_vloc.vpr_systems import (
     SALAD,
     Sela,
 )
-from aero_vloc.dataset import MyData, MyQueries

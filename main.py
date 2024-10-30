@@ -15,17 +15,17 @@
 import aero_vloc as avl
 
 from pathlib import Path
-from aero_vloc.dataset import MyData, MyQueries
-from aero_vloc.retrieval_system import MyRetrievalSystem
+from aero_vloc.dataset import Data, Queries
+from aero_vloc.retrieval_system import RetrievalSystem
 
 
-test_ds = MyData(Path("../VPR-datasets-downloader/datasets"), "nordland", limit=200)
-queries = MyQueries(Path("../VPR-datasets-downloader/datasets"), "nordland", test_ds.knn, limit=10)
+test_ds = Data(Path("../VPR-datasets-downloader/datasets"), "nordland", limit=20)
+queries = Queries(Path("../VPR-datasets-downloader/datasets"), "nordland", test_ds.knn, limit=10)
 
 eigen_places = avl.SALAD()
 super_glue = avl.SuperGlue("weights/superglue_outdoor.pth", resize=800)
 faiss_searcher = avl.FaissSearcher()
-retrieval_system = MyRetrievalSystem(eigen_places, test_ds, super_glue, faiss_searcher)
+retrieval_system = RetrievalSystem(eigen_places, test_ds, super_glue, faiss_searcher)
 
 homography_estimator = avl.HomographyEstimator()
 localization_pipeline = avl.LocalizationPipeline(retrieval_system, homography_estimator)

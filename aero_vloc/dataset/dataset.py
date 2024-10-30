@@ -26,7 +26,7 @@ base_transform = transforms.Compose([
     # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 ])
 
-class MyData(torch.utils.data.Dataset):
+class Data(torch.utils.data.Dataset):
     def __init__(self, dataset_dir: Path, dataset_name, resize=[224, 224], limit=10):
         super().__init__()
         if not dataset_dir.exists():
@@ -57,7 +57,7 @@ class MyData(torch.utils.data.Dataset):
         return  (f"< {self.__class__.__name__}, - #database: {self.database_num};>")
     
 
-class MyQueries(torch.utils.data.Dataset):
+class Queries(torch.utils.data.Dataset):
     def __init__(self, dataset_dir: Path, dataset_name, knn: NearestNeighbors, resize=[224, 224], limit=10):
         super().__init__()
         queries_dir = dataset_dir / dataset_name / "images/test" / "queries"
@@ -72,8 +72,8 @@ class MyQueries(torch.utils.data.Dataset):
         
         self.queries_num = len(self.queries_paths)
         self.knn = knn
-        # self.soft_positives_per_query = knn.radius_neighbors(self.queries_utms, 4, return_distance=False)
-        self.soft_positives_per_query = knn.radius_neighbors(self.queries_utms, 25, return_distance=False)
+        self.soft_positives_per_query = knn.radius_neighbors(self.queries_utms, 4, return_distance=False)
+        self.soft_positives_per_query = knn.radius_neighbors(self.queries_utms, 4, return_distance=False)
 
     def __getitem__(self, index):
         img = path_to_pil_img(self.queries_paths[index])
