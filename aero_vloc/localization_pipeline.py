@@ -43,8 +43,7 @@ class LocalizationPipeline:
         :return: List of geocoordinates. Also, the values can be None if the location could not be determined
         """
         localization_results = []
-        positives_per_query = query_seq.get_positives()
-        for query_image, positives in zip(query_seq, positives_per_query):
+        for query_image in query_seq:
             (
                 res_prediction,
                 matched_kpts_query,

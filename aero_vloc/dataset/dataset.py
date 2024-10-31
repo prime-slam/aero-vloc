@@ -73,7 +73,6 @@ class Queries(torch.utils.data.Dataset):
         self.queries_num = len(self.queries_paths)
         self.knn = knn
         self.soft_positives_per_query = knn.radius_neighbors(self.queries_utms, 4, return_distance=False)
-        self.soft_positives_per_query = knn.radius_neighbors(self.queries_utms, 4, return_distance=False)
 
     def __getitem__(self, index):
         img = path_to_pil_img(self.queries_paths[index])
