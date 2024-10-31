@@ -16,11 +16,11 @@ import numpy as np
 from aero_vloc.localization_pipeline import LocalizationPipeline
 from aero_vloc.metrics.utils import calculate_distance
 from aero_vloc.primitives import UAVSeq
-from aero_vloc.dataset import MyQueries
+from aero_vloc.dataset import Queries
 
 
 def reference_recall(
-    eval_q: MyQueries,
+    eval_q: Queries,
     localization_pipeline: LocalizationPipeline,
     k_closest: int,
     threshold: int,
