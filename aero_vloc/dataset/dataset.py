@@ -39,7 +39,7 @@ class Data(torch.utils.data.Dataset):
             self.database_paths = self.database_paths[:limit]
         self.database_utms = np.array(
             [
-                (path.stem.split("@")[0], path.stem.split("@")[1])
+                (path.stem.split("@")[1], path.stem.split("@")[2])
                 for path in self.database_paths
             ]
         ).astype(np.float64)
@@ -82,7 +82,7 @@ class Queries(torch.utils.data.Dataset):
             self.queries_paths = self.queries_paths[:limit]
         self.queries_utms = np.array(
             [
-                (str(path).split("@")[0], str(path).split("@")[1])
+                (path.stem.split("@")[1], path.stem.split("@")[2])
                 for path in self.queries_paths
             ]
         ).astype(np.float64)
