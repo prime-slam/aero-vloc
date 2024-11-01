@@ -39,7 +39,7 @@ class Data(torch.utils.data.Dataset):
             self.database_paths = self.database_paths[:limit]
         self.database_utms = np.array(
             [
-                (str(path).split("@")[0], str(path).split("@")[1])
+                (path.stem.split("@")[0], path.stem.split("@")[1])
                 for path in self.database_paths
             ]
         ).astype(np.float64)
