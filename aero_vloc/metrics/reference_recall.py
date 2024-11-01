@@ -51,7 +51,7 @@ def reference_recall(
             recall_value += 1
 
     recall = recall_value / eval_q.queries_num
-    return recall, {'localization', time_measurement}
+    return recall, {'localization': time_measurement}
 
 
     # for loc_res, positives in zip(localization_results, uav_seq.get_positives()):
