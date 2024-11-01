@@ -37,7 +37,7 @@ class Data(torch.utils.data.Dataset):
         self.database_paths = sorted(database_dir.glob("*.jpg"))
         if limit is not None:
             self.database_paths = self.database_paths[:limit]
-        self.database_utms = np.array([(str(path).split("@")[1], str(path).split("@")[2]) for path in self.database_paths]).astype(np.float64)
+        self.database_utms = np.array([(str(path).split("@")[0], str(path).split("@")[1]) for path in self.database_paths]).astype(np.float64)
         
         self.knn = NearestNeighbors(n_jobs=-1)
         self.knn.fit(self.database_utms)
