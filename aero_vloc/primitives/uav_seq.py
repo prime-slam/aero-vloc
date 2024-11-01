@@ -55,8 +55,8 @@ class RegularSeq:
         self.queries_paths = sorted(queries_path.glob("*.png"))
         if limit is not None:
             self.queries_paths = self.queries_paths[:limit]
-    
+
     def __iter__(self):
         for query_path in self.queries_paths:
-            easting, northing = query_path.split("@")[1], query_path.split("@")[2]
+            easting, northing = query_path.split("@")[0], query_path.split("@")[1]
             yield UAVImage(query_path, easting, northing)

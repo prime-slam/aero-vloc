@@ -33,7 +33,7 @@ class LocalizationPipeline:
         self,
         query_seq: Queries,
         k_closest: int,
-    # ) -> list[Optional[Tuple[float, float]]]:
+        # ) -> list[Optional[Tuple[float, float]]]:
     ) -> list[int]:
         """
         Calculates UAV locations using the retrieval system and homography estimator.
@@ -60,4 +60,3 @@ class LocalizationPipeline:
             localization_results.append(res_prediction)
         self.retrieval_system.end_of_query_seq()
         return localization_results
-

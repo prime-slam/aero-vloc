@@ -49,7 +49,7 @@ def reference_recall(
     # for loc_res, positives in zip(localization_results, uav_seq.get_positives()):
     #     if loc_res is not None:
     #         lat, lon = loc_res
-    #         error 
+    #         error
 
     # for loc_res, uav_image in zip(localization_results, uav_seq):
     #     if loc_res is not None:

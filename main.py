@@ -20,7 +20,9 @@ from aero_vloc.retrieval_system import RetrievalSystem
 
 
 test_ds = Data(Path("../VPR-datasets-downloader/datasets"), "nordland", limit=20)
-queries = Queries(Path("../VPR-datasets-downloader/datasets"), "nordland", test_ds.knn, limit=10)
+queries = Queries(
+    Path("../VPR-datasets-downloader/datasets"), "nordland", test_ds.knn, limit=10
+)
 
 eigen_places = avl.SALAD()
 super_glue = avl.SuperGlue("weights/superglue_outdoor.pth", resize=800)
@@ -30,5 +32,7 @@ retrieval_system = RetrievalSystem(eigen_places, test_ds, super_glue, faiss_sear
 homography_estimator = avl.HomographyEstimator()
 localization_pipeline = avl.LocalizationPipeline(retrieval_system, homography_estimator)
 
-recall_value = avl.reference_recall(queries, localization_pipeline, k_closest=50, threshold=100)
+recall_value = avl.reference_recall(
+    queries, localization_pipeline, k_closest=50, threshold=100
+)
 print(recall_value)
