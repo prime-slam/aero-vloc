@@ -1,4 +1,4 @@
-#  Copyright (c) 2023, Ivan Moskalenko, Anastasiia Kornilova
+#  Copyright (c) 2023, Ivan Moskalenko, Anastasiia Kornilova, Mikhail Kiselyov
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -12,6 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 from pathlib import Path
+from typing import Optional
 
 from aero_vloc.primitives.uav_image import UAVImage
 
@@ -46,3 +47,16 @@ class UAVSeq:
     def __iter__(self):
         for uav_image in self.uav_images:
             yield uav_image
+
+
+class RegularSeq:
+    def __init__(self, path_to_dataset: Path, limit: Optional[int] = None) -> None:
+        queries_path = path_to_dataset / "images/test/queries"
+        self.queries_paths = sorted(queries_path.glob("*.png"))
+        if limit is not None:
+            self.queries_paths = self.queries_paths[:limit]
+
+    def __iter__(self):
+        for query_path in self.queries_paths:
+            easting, northing = query_path.split("@")[0], query_path.split("@")[1]
+            yield UAVImage(query_path, easting, northing)

@@ -1,4 +1,4 @@
-#  Copyright (c) 2023, Ivan Moskalenko, Anastasiia Kornilova
+#  Copyright (c) 2023, Ivan Moskalenko, Anastasiia Kornilova, Mikhail Kiselyov
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -14,14 +14,15 @@
 import numpy as np
 
 from pathlib import Path
-from typing import Optional, Tuple
+from timeit import default_timer as timer
+from typing import Optional, Tuple, Dict
 from tqdm import tqdm
 
 from aero_vloc.feature_matchers import FeatureMatcher
 from aero_vloc.index_searchers import IndexSearcher
-from aero_vloc.maps import Map
 from aero_vloc.primitives import UAVImage
 from aero_vloc.vpr_systems import VPRSystem
+from aero_vloc.dataset import Data
 
 
 class RetrievalSystem:
@@ -33,43 +34,37 @@ class RetrievalSystem:
     def __init__(
         self,
         vpr_system: VPRSystem,
-        sat_map: Map,
+        dataset: Data,
         feature_matcher: FeatureMatcher,
         index_searcher: IndexSearcher,
-        path_to_descs: Path = None,
-        path_to_feat: Path = None,
     ):
         self.vpr_system = vpr_system
         self.feature_matcher = feature_matcher
-        self.sat_map = sat_map
+        self.dataset = dataset
         self.index = index_searcher
+        self.time_measurements = {}
+        self.global_descs = []
 
-        if path_to_descs is None:
-            self.global_descs = []
-            for tile in tqdm(
-                sat_map, desc="Calculating of global descriptors for source DB"
-            ):
-                self.global_descs.append(
-                    self.vpr_system.get_image_descriptor(tile.image)
-                )
-            self.index.create(np.asarray(self.global_descs))
-        else:
-            self.index.create(np.load(path_to_descs, allow_pickle=True))
+        start = timer()
+        for image in tqdm(
+            dataset, desc="Calculating of global descriptors for source DB"
+        ):
+            self.global_descs.append(self.vpr_system.get_image_descriptor(image))
+        self.time_measurements["global_descs"] = timer() - start
+        self.index.create(np.asarray(self.global_descs))
 
-        if path_to_feat is None:
-            local_features = []
-            for i, tile in enumerate(
-                tqdm(sat_map, desc="Calculating of local features for source DB")
-            ):
-                local_features.append(self.feature_matcher.get_feature(tile.image))
-            self.source_local_features = np.asarray(local_features)
-            del local_features
-        else:
-            self.source_local_features = np.load(path_to_feat, allow_pickle=True)
+        start = timer()
+        local_features = []
+        for i, image in enumerate(
+            tqdm(dataset, desc="Calculating of local features for source DB")
+        ):
+            local_features.append(self.feature_matcher.get_feature(image))
+        self.time_measurements["local_features"] = timer() - start
+        self.source_local_features = np.asarray(local_features)
 
     def __call__(
         self,
-        query_image: UAVImage,
+        image,
         vpr_k_closest: int,
         feature_matcher_k_closest: int | None,
     ) -> Tuple[list, Optional[list], Optional[list]]:
@@ -86,14 +81,14 @@ class RetrievalSystem:
         list of matched reference keypoints for every query -- reference pair (optional)
         """
         query_global_desc = np.expand_dims(
-            self.vpr_system.get_image_descriptor(query_image.image), axis=0
+            self.vpr_system.get_image_descriptor(image), axis=0
         )
         global_predictions = self.index.search(query_global_desc, vpr_k_closest)
 
         if feature_matcher_k_closest is None:
             return global_predictions, None, None
 
-        query_local_features = self.feature_matcher.get_feature(query_image.image)
+        query_local_features = self.feature_matcher.get_feature(image)
         filtered_db_features = self.source_local_features[global_predictions]
         (
             local_predictions,
@@ -111,3 +106,7 @@ class RetrievalSystem:
         is over to prepare it for the following sequence
         """
         self.index.end_of_query_seq()
+
+    def get_time_measurements(self) -> Dict[str, float]:
+        return self.time_measurements
+

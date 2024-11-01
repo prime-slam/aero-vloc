@@ -1,4 +1,4 @@
-#  Copyright (c) 2023, Ivan Moskalenko, Anastasiia Kornilova
+#  Copyright (c) 2023, Ivan Moskalenko, Anastasiia Kornilova, Mikhail Kiselyov
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -11,11 +11,9 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-from typing import Optional, Tuple
-
 from aero_vloc.homography_estimator import HomographyEstimator
-from aero_vloc.primitives import UAVSeq
 from aero_vloc.retrieval_system import RetrievalSystem
+from aero_vloc.dataset import Queries
 
 
 class LocalizationPipeline:
@@ -33,9 +31,10 @@ class LocalizationPipeline:
 
     def __call__(
         self,
-        query_seq: UAVSeq,
+        query_seq: Queries,
         k_closest: int,
-    ) -> list[Optional[Tuple[float, float]]]:
+        # ) -> list[Optional[Tuple[float, float]]]:
+    ) -> list[int]:
         """
         Calculates UAV locations using the retrieval system and homography estimator.
 
@@ -57,24 +56,7 @@ class LocalizationPipeline:
             matched_kpts_query = matched_kpts_query[0]
             matched_kpts_reference = matched_kpts_reference[0]
 
-            chosen_sat_image = self.retrieval_system.sat_map[res_prediction]
-            estimator_result = self.homography_estimator(
-                matched_kpts_query,
-                matched_kpts_reference,
-                query_image,
-                self.retrieval_system.feature_matcher.resize,
-            )
-            if estimator_result is None:
-                localization_results.append(None)
-                continue
-            (
-                latitude,
-                longitude,
-            ) = self.retrieval_system.sat_map.geo_referencer.get_lat_lon(
-                chosen_sat_image,
-                estimator_result,
-                self.retrieval_system.feature_matcher.resize,
-            )
-            localization_results.append((latitude, longitude))
+            chosen_sat_image = self.retrieval_system.dataset[res_prediction]
+            localization_results.append(res_prediction)
         self.retrieval_system.end_of_query_seq()
         return localization_results
