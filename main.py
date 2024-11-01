@@ -19,9 +19,9 @@ from aero_vloc.dataset import Data, Queries
 from aero_vloc.retrieval_system import RetrievalSystem
 
 
-test_ds = Data(Path("../VPR-datasets-downloader/datasets"), "nordland", limit=20)
+test_ds = Data(Path("../datasets"), "st_lucia", limit=20)
 queries = Queries(
-    Path("../VPR-datasets-downloader/datasets"), "nordland", test_ds.knn, limit=10
+    Path("../datasets"), "st_lucia", test_ds.knn, limit=10
 )
 
 eigen_places = avl.SALAD()

@@ -46,8 +46,6 @@
 import numpy as np
 import torch
 
-from tqdm import tqdm
-
 from aero_vloc.feature_detectors import SuperPoint
 from aero_vloc.feature_matchers.feature_matcher import FeatureMatcher
 from aero_vloc.feature_matchers.superglue.model.superglue_matcher import (
@@ -88,9 +86,7 @@ class SuperGlue(FeatureMatcher):
         matched_kpts_query = []
         matched_kpts_reference = []
 
-        for db_index, db_feature in enumerate(
-            tqdm(db_features, desc="Matching of SG features")
-        ):
+        for db_index, db_feature in enumerate(db_features):
             keys = ["keypoints", "scores", "descriptors"]
             pred = {
                 k + "0": (v.to(self.device) if k in keys else v)

@@ -11,6 +11,8 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+from tqdm import tqdm
+
 from aero_vloc.homography_estimator import HomographyEstimator
 from aero_vloc.retrieval_system import RetrievalSystem
 from aero_vloc.dataset import Queries
@@ -43,7 +45,7 @@ class LocalizationPipeline:
         :return: List of geocoordinates. Also, the values can be None if the location could not be determined
         """
         localization_results = []
-        for query_image in query_seq:
+        for query_image in tqdm(query_seq, desc="Localization"):
             (
                 res_prediction,
                 matched_kpts_query,
