@@ -14,7 +14,8 @@
 import numpy as np
 
 from pathlib import Path
-from typing import Optional, Tuple
+from timeit import default_timer as timer
+from typing import Optional, Tuple, Dict
 from tqdm import tqdm
 
 from aero_vloc.feature_matchers import FeatureMatcher
@@ -41,19 +42,24 @@ class RetrievalSystem:
         self.feature_matcher = feature_matcher
         self.dataset = dataset
         self.index = index_searcher
-
+        self.time_measurements = {}
         self.global_descs = []
+
+        start = timer()
         for image in tqdm(
             dataset, desc="Calculating of global descriptors for source DB"
         ):
             self.global_descs.append(self.vpr_system.get_image_descriptor(image))
+        self.time_measurements["global_descs"] = timer() - start
         self.index.create(np.asarray(self.global_descs))
 
+        start = timer()
         local_features = []
         for i, image in enumerate(
             tqdm(dataset, desc="Calculating of local features for source DB")
         ):
             local_features.append(self.feature_matcher.get_feature(image))
+        self.time_measurements["local_features"] = timer() - start
         self.source_local_features = np.asarray(local_features)
 
     def __call__(
@@ -100,3 +106,7 @@ class RetrievalSystem:
         is over to prepare it for the following sequence
         """
         self.index.end_of_query_seq()
+
+    def get_time_measurements(self) -> Dict[str, float]:
+        return self.time_measurements
+

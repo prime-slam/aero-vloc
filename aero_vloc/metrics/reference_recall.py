@@ -11,6 +11,9 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+from typing import Dict, Tuple
+from timeit import default_timer as timer
+
 import numpy as np
 
 from aero_vloc.localization_pipeline import LocalizationPipeline
@@ -24,7 +27,7 @@ def reference_recall(
     localization_pipeline: LocalizationPipeline,
     k_closest: int,
     threshold: int,
-) -> float:
+) -> Tuple[float, Dict[str, float]]:
     """
     The metric finds the number of correctly matched frames based on georeference error
 
@@ -38,13 +41,18 @@ def reference_recall(
     :return: Recall value
     """
     recall_value = 0
+
+    start = timer()
     predictions = localization_pipeline(eval_q, k_closest)
+    time_measurement = timer() - start
 
     for pred, positives in zip(predictions, eval_q.get_positives()):
         if pred in positives:
             recall_value += 1
 
-    return recall_value / eval_q.queries_num
+    recall = recall_value / eval_q.queries_num
+    return recall, {'localization', time_measurement}
+
 
     # for loc_res, positives in zip(localization_results, uav_seq.get_positives()):
     #     if loc_res is not None:

@@ -32,7 +32,11 @@ retrieval_system = RetrievalSystem(eigen_places, test_ds, super_glue, faiss_sear
 homography_estimator = avl.HomographyEstimator()
 localization_pipeline = avl.LocalizationPipeline(retrieval_system, homography_estimator)
 
-recall_value = avl.reference_recall(
+recall_value, localization_time = avl.reference_recall(
     queries, localization_pipeline, k_closest=50, threshold=100
 )
+
+all_time_measurements = retrieval_system.get_time_measurements() | localization_time
+print()
 print(recall_value)
+print(all_time_measurements)
