@@ -13,30 +13,42 @@
 #  limitations under the License.
 
 import aero_vloc as avl
+import pickle
 
 from pathlib import Path
 from aero_vloc.dataset import Data, Queries
 from aero_vloc.retrieval_system import RetrievalSystem
 
 
-test_ds = Data(Path("../datasets"), "st_lucia", limit=20)
+test_ds = Data(Path("datasets"), "st_lucia", limit=None)
 queries = Queries(
-    Path("../datasets"), "st_lucia", test_ds.knn, limit=10
+    Path("datasets"), "st_lucia", test_ds.knn, limit=None
 )
 
-eigen_places = avl.SALAD()
-super_glue = avl.SuperGlue("weights/superglue_outdoor.pth", resize=800)
-faiss_searcher = avl.FaissSearcher()
-retrieval_system = RetrievalSystem(eigen_places, test_ds, super_glue, faiss_searcher)
+extractors = {
+    'cosplace': avl.CosPlace(),
+    'eigenplaces': avl.EigenPlaces(),
+    'mixvpr': avl.MixVPR('weights/resnet50_MixVPR_4096_channels(1024)_rows(4).ckpt'),
+    'salad': avl.SALAD(),
+}
 
-homography_estimator = avl.HomographyEstimator()
-localization_pipeline = avl.LocalizationPipeline(retrieval_system, homography_estimator)
+matcher = avl.LightGlue(resize=800)
+index_searcher = avl.FaissSearcher()
 
-recall_value, localization_time = avl.reference_recall(
-    queries, localization_pipeline, k_closest=50, threshold=100
-)
+measurements = {}
 
-all_time_measurements = retrieval_system.get_time_measurements() | localization_time
+for name, extractor in extractors.items():
+    retrieval_system = RetrievalSystem(extractor, test_ds, matcher, index_searcher)
+    homography_estimator = avl.HomographyEstimator()
+    localization_pipeline = avl.LocalizationPipeline(retrieval_system, homography_estimator)
+
+    recall_value = avl.reference_recall(
+        queries, localization_pipeline, k_closest=10, threshold=100
+    )
+
+    measurements[name] = retrieval_system.get_time_measurements()
 print()
-print(recall_value)
-print(all_time_measurements)
+print(measurements)
+
+with open('measurements_k10.pkl', 'wb') as f:
+    pickle.dump(measurements, f)

@@ -42,7 +42,12 @@ class RetrievalSystem:
         self.feature_matcher = feature_matcher
         self.dataset = dataset
         self.index = index_searcher
-        self.time_measurements = {}
+        self.time_measurements = {
+            "global_descs": [],
+            "index_search": [],
+            "feature_extraction": [],
+            "feature_matching": [],
+        }
         self.global_descs = []
 
         start = timer()
@@ -50,7 +55,6 @@ class RetrievalSystem:
             dataset, desc="Calculating of global descriptors for source DB"
         ):
             self.global_descs.append(self.vpr_system.get_image_descriptor(image))
-        self.time_measurements["global_descs"] = timer() - start
         self.index.create(np.asarray(self.global_descs))
 
         start = timer()
@@ -59,7 +63,6 @@ class RetrievalSystem:
             tqdm(dataset, desc="Calculating of local features for source DB")
         ):
             local_features.append(self.feature_matcher.get_feature(image))
-        self.time_measurements["local_features"] = timer() - start
         self.source_local_features = np.asarray(local_features)
 
     def __call__(
@@ -80,15 +83,24 @@ class RetrievalSystem:
         list of matched query keypoints for every query -- reference pair (optional),
         list of matched reference keypoints for every query -- reference pair (optional)
         """
+        start = timer()
         query_global_desc = np.expand_dims(
             self.vpr_system.get_image_descriptor(image), axis=0
         )
+        self.time_measurements["global_descs"].append(timer() - start)
+
+        start = timer()
         global_predictions = self.index.search(query_global_desc, vpr_k_closest)
+        self.time_measurements["index_search"].append(timer() - start)
 
         if feature_matcher_k_closest is None:
             return global_predictions, None, None
 
+        start = timer()
         query_local_features = self.feature_matcher.get_feature(image)
+        self.time_measurements["feature_extraction"].append(timer() - start)
+
+        start = timer()
         filtered_db_features = self.source_local_features[global_predictions]
         (
             local_predictions,
@@ -98,6 +110,7 @@ class RetrievalSystem:
             query_local_features, filtered_db_features, feature_matcher_k_closest
         )
         res_predictions = global_predictions[local_predictions]
+        self.time_measurements["feature_matching"].append(timer() - start)
         return res_predictions, matched_kpts_query, matched_kpts_reference
 
     def end_of_query_seq(self):

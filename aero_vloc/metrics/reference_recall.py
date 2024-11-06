@@ -42,16 +42,14 @@ def reference_recall(
     """
     recall_value = 0
 
-    start = timer()
     predictions = localization_pipeline(eval_q, k_closest)
-    time_measurement = timer() - start
 
     for pred, positives in zip(predictions, eval_q.get_positives()):
         if pred in positives:
             recall_value += 1
 
     recall = recall_value / eval_q.queries_num
-    return recall, {'localization': time_measurement}
+    return recall
 
 
     # for loc_res, positives in zip(localization_results, uav_seq.get_positives()):

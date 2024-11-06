@@ -56,9 +56,7 @@ class LightGlue(FeatureMatcher):
         matched_kpts_query = []
         matched_kpts_reference = []
 
-        for db_index, db_feature in enumerate(
-            tqdm(db_features, desc="Matching of LG features")
-        ):
+        for db_index, db_feature in enumerate(db_features):
             keys = ["keypoints", "scores", "descriptors"]
             query_features = {
                 k: (v.to(self.device) if k in keys else v)
