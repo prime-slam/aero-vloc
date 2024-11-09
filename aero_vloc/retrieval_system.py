@@ -50,14 +50,12 @@ class RetrievalSystem:
         }
         self.global_descs = []
 
-        start = timer()
         for image in tqdm(
             dataset, desc="Calculating of global descriptors for source DB"
         ):
             self.global_descs.append(self.vpr_system.get_image_descriptor(image))
         self.index.create(np.asarray(self.global_descs))
 
-        start = timer()
         local_features = []
         for i, image in enumerate(
             tqdm(dataset, desc="Calculating of local features for source DB")
