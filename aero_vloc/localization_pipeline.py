@@ -31,6 +31,11 @@ class LocalizationPipeline:
         self.retrieval_system = retrieval_system
         self.homography_estimator = homography_estimator
 
+    def process_all(self, query_seq: Queries, k_closest: int):
+        results = self.retrieval_system.process_batch(query_seq, k_closest, 1)
+        return [result[0][0] for result in results]
+
+
     def __call__(
         self,
         query_seq: Queries,

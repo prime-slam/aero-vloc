@@ -42,7 +42,8 @@ def reference_recall(
     """
     recall_value = 0
 
-    predictions = localization_pipeline(eval_q, k_closest)
+    predictions = localization_pipeline.process_all(eval_q, k_closest)
+    # predictions = localization_pipeline(eval_q, k_closest)
 
     for pred, positives in zip(predictions, eval_q.get_positives()):
         if pred in positives:

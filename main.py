@@ -19,17 +19,25 @@ from pathlib import Path
 from aero_vloc.dataset import Data, Queries
 from aero_vloc.retrieval_system import RetrievalSystem
 
+LIMIT = None
 
-test_ds = Data(Path("datasets"), "st_lucia", limit=None)
+test_ds = Data(Path("datasets"), "satellite", limit=LIMIT, gt=False)
 queries = Queries(
-    Path("datasets"), "st_lucia", test_ds.knn, limit=None
+    Path("datasets"),
+    "satellite",
+    knn=None,
+    # knn=test_ds.knn,
+    limit=LIMIT
 )
 
 extractors = {
-    'cosplace': avl.CosPlace(),
-    'eigenplaces': avl.EigenPlaces(),
-    'mixvpr': avl.MixVPR('weights/resnet50_MixVPR_4096_channels(1024)_rows(4).ckpt'),
-    'salad': avl.SALAD(),
+    # 'anyloc': [avl.AnyLoc, ['weights/anyloc_cluster_centers_aerial.pt']],
+    'cosplace': [avl.CosPlace, []],
+    'eigenplaces': [avl.EigenPlaces, []],
+    'mixvpr': [avl.MixVPR, ['weights/resnet50_MixVPR_4096_channels(1024)_rows(4).ckpt']],
+    'salad': [avl.SALAD, []],
+    'selavpr': [avl.Sela, ['weights/SelaVPR_msls.pth', 'weights/dinov2_vitl14_pretrain.pth']],
+    # 'netvlad': [avl.NetVLAD, ['weights/mapillary_WPCA4096.pth.tar']],
 }
 
 matcher = avl.LightGlue(resize=800)
@@ -37,18 +45,19 @@ index_searcher = avl.FaissSearcher()
 
 measurements = {}
 
-for name, extractor in extractors.items():
+for name, (method, args) in extractors.items():
+    extractor = method(*args)
     retrieval_system = RetrievalSystem(extractor, test_ds, matcher, index_searcher)
     homography_estimator = avl.HomographyEstimator()
     localization_pipeline = avl.LocalizationPipeline(retrieval_system, homography_estimator)
 
-    recall_value = avl.reference_recall(
-        queries, localization_pipeline, k_closest=10, threshold=100
-    )
+    # recall_value = avl.reference_recall(
+    #     queries, localization_pipeline, k_closest=10, threshold=100
+    # )
+    predictions = localization_pipeline.process_all(queries, k_closest=10)
+
 
     measurements[name] = retrieval_system.get_time_measurements()
-print()
-print(measurements)
 
-with open('measurements_k10.pkl', 'wb') as f:
+with open('sattelite_k10.pkl', 'wb') as f:
     pickle.dump(measurements, f)

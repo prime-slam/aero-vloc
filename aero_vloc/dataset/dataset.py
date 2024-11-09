@@ -27,25 +27,27 @@ base_transform = transforms.Compose([transforms.ToTensor()])
 
 
 class Data(torch.utils.data.Dataset):
-    def __init__(self, dataset_dir: Path, dataset_name, resize=[224, 224], limit=10):
+    def __init__(self, dataset_dir: Path, dataset_name, resize=[224, 224], limit=10, gt=True):
         super().__init__()
         if not dataset_dir.exists():
             raise FileNotFoundError(f"Dataset folder {dataset_dir} not found.")
         self.resize = resize
 
         database_dir = dataset_dir / dataset_name / "images/test" / "database"
-        self.database_paths = sorted(database_dir.glob("*.jpg"))
+        self.database_paths = sorted(database_dir.glob("*.png"))
         if limit is not None:
             self.database_paths = self.database_paths[:limit]
-        self.database_utms = np.array(
-            [
-                (path.stem.split("@")[1], path.stem.split("@")[2])
-                for path in self.database_paths
-            ]
-        ).astype(np.float64)
 
-        self.knn = NearestNeighbors(n_jobs=-1)
-        self.knn.fit(self.database_utms)
+        if gt:
+            self.database_utms = np.array(
+                [
+                    (path.stem.split("@")[1], path.stem.split("@")[2])
+                    for path in self.database_paths
+                ]
+            ).astype(np.float64)
+
+            self.knn = NearestNeighbors(n_jobs=-1)
+            self.knn.fit(self.database_utms)
 
         self.database_num = len(self.database_paths)
 
@@ -67,7 +69,7 @@ class Queries(torch.utils.data.Dataset):
         self,
         dataset_dir: Path,
         dataset_name,
-        knn: NearestNeighbors,
+        knn: NearestNeighbors | None,
         resize=[224, 224],
         limit=10,
     ):
@@ -77,21 +79,23 @@ class Queries(torch.utils.data.Dataset):
             raise FileNotFoundError(f"Queries folder {queries_dir} not found.")
         self.resize = resize
 
-        self.queries_paths = sorted(queries_dir.glob("*.jpg"))
+        self.queries_paths = sorted(queries_dir.glob("*.png"))
         if limit is not None:
             self.queries_paths = self.queries_paths[:limit]
-        self.queries_utms = np.array(
-            [
-                (path.stem.split("@")[1], path.stem.split("@")[2])
-                for path in self.queries_paths
-            ]
-        ).astype(np.float64)
-
         self.queries_num = len(self.queries_paths)
-        self.knn = knn
-        self.soft_positives_per_query = knn.radius_neighbors(
-            self.queries_utms, 4, return_distance=False
-        )
+        
+        if knn is not None:
+            self.queries_utms = np.array(
+                [
+                    (path.stem.split("@")[1], path.stem.split("@")[2])
+                    for path in self.queries_paths
+                ]
+            ).astype(np.float64)
+
+            self.knn = knn
+            self.soft_positives_per_query = knn.radius_neighbors(
+                self.queries_utms, 4, return_distance=False
+            )
 
     def __getitem__(self, index):
         img = path_to_pil_img(self.queries_paths[index])
