@@ -34,7 +34,7 @@ class Data(torch.utils.data.Dataset):
         self.resize = resize
 
         database_dir = dataset_dir / dataset_name / "images/test" / "database"
-        self.database_paths = sorted(database_dir.glob("*.png"))
+        self.database_paths = sorted(database_dir.glob("*.png")) + sorted(database_dir.glob("*.jpg"))
         if limit is not None:
             self.database_paths = self.database_paths[:limit]
 
@@ -79,7 +79,7 @@ class Queries(torch.utils.data.Dataset):
             raise FileNotFoundError(f"Queries folder {queries_dir} not found.")
         self.resize = resize
 
-        self.queries_paths = sorted(queries_dir.glob("*.png"))
+        self.queries_paths = sorted(queries_dir.glob("*.png")) + sorted(queries_dir.glob("*.jpg"))
         if limit is not None:
             self.queries_paths = self.queries_paths[:limit]
         self.queries_num = len(self.queries_paths)

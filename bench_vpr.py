@@ -12,25 +12,27 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import numpy as np
 import aero_vloc as avl
 import pickle
 
 from pathlib import Path
+from aero_vloc.benchmarking import benchmark_feature_matcher, benchmark_vpr_system, create_index, create_local_features
 from aero_vloc.dataset import Data, Queries
 from aero_vloc.retrieval_system import RetrievalSystem
 
 LIMIT = None
 
-test_ds = Data(Path("datasets"), "satellite", limit=LIMIT, gt=False)
+test_ds_name = "satellite"
+test_ds = Data(Path("datasets"), test_ds_name, limit=LIMIT, gt=False)
 queries = Queries(
     Path("datasets"),
     "satellite",
     knn=None,
-    # knn=test_ds.knn,
     limit=LIMIT
 )
 
-extractors = {
+vpr_systems = {
     # 'anyloc': [avl.AnyLoc, ['weights/anyloc_cluster_centers_aerial.pt']],
     'cosplace': [avl.CosPlace, []],
     'eigenplaces': [avl.EigenPlaces, []],
@@ -40,12 +42,26 @@ extractors = {
     # 'netvlad': [avl.NetVLAD, ['weights/mapillary_WPCA4096.pth.tar']],
 }
 
+
+index_searchers = {
+    'faiss': [avl.FaissSearcher],
+}
+
 matcher = avl.LightGlue(resize=800)
 index_searcher = avl.FaissSearcher()
 
-measurements = {}
+vpr_measurements = {}
 
-for name, (method, args) in extractors.items():
+for vpr_system_name, (method, args) in vpr_systems.items():
+    print('Processing', vpr_system_name)
+    index = avl.FaissSearcher()
+    vpr_system = method(*args)
+    create_index(test_ds, vpr_system, index)
+    vpr_measurements[vpr_system_name] = benchmark_vpr_system(queries, vpr_system, index, 10)
+    del vpr_system, index
+
+
+for name, (method, args) in vpr_systems.items():
     extractor = method(*args)
     retrieval_system = RetrievalSystem(extractor, test_ds, matcher, index_searcher)
     homography_estimator = avl.HomographyEstimator()
@@ -57,7 +73,7 @@ for name, (method, args) in extractors.items():
     predictions = localization_pipeline.process_all(queries, k_closest=10)
 
 
-    measurements[name] = retrieval_system.get_time_measurements()
+    vpr_measurements[name] = retrieval_system.get_time_measurements()
 
-with open('sattelite_k10.pkl', 'wb') as f:
-    pickle.dump(measurements, f)
+with open('satellite_vpr.pkl', 'wb') as f:
+    pickle.dump(vpr_measurements, f)
